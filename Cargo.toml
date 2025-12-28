@@ -1,0 +1,17 @@
+[package]
+name = "kz80_bc"
+version = "0.1.0"
+edition = "2021"
+description = "Arbitrary-precision decimal arithmetic language and calculator for Z80"
+license = "BSD-3-Clause"
+readme = "README.md"
+repository = "https://github.com/ajokela/kz80_bc"
+keywords = ["bc", "calculator", "z80", "bcd", "retrocomputing"]
+categories = ["compilers", "mathematics", "command-line-utilities"]
+authors = ["Alex Jokela"]
+
+[dependencies]
+
+[[bin]]
+name = "bc80"
+path = "src/main.rs"

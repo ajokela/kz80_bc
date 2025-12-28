@@ -1,0 +1,11 @@
+/* Factorial function */
+
+define f(n) {
+    if (n <= 1) return 1
+    return n * f(n - 1)
+}
+
+/* Calculate factorials */
+f(5)
+f(10)
+f(20)

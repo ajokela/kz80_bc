@@ -1,0 +1,14 @@
+/* Simple bc example */
+
+/* Just print some numbers */
+1 + 2
+3 * 4
+10 - 5
+
+/* Assignment */
+a = 42
+a
+
+/* Scale for division */
+scale = 10
+1 / 3

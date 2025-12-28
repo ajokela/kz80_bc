@@ -1,0 +1,16 @@
+# Build artifacts
+/target/
+Cargo.lock
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Generated binaries
+*.bin
+*.rom
+
+CLAUDE.md
