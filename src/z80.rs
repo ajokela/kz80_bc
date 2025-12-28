@@ -1634,8 +1634,8 @@ fn emit_bcd_div_routine(code: &mut Vec<u8>, bcd_sub: u16) {
     // We need to convert to packed BCD: high byte at offset 26, low byte at offset 27
 
     // Binary to BCD conversion using repeated division by 10
-    // quotient % 10 = units digit
-    // (quotient / 10) % 10 = tens digit, etc.
+    // For each digit: divide by 10, remainder is the digit, quotient becomes new dividend
+    // Uses 16-bit division to handle quotients > 255
 
     // For up to 9999, we need 4 digits = 2 packed bytes
     code.push(POP_HL);           // HL = result
@@ -1643,21 +1643,18 @@ fn emit_bcd_div_routine(code: &mut Vec<u8>, bcd_sub: u16) {
     code.push(LD_DE_NN);
     emit_u16(code, 27);
     code.push(ADD_HL_DE);        // HL = result + 27 (last packed byte)
-    code.push(PUSH_HL);          // Save position
+    code.push(PUSH_HL);          // Save position [stack: pos, result]
 
-    // Convert BC to BCD
-    // Divide BC by 10 repeatedly, collect remainders
-    // Remainder 1 = units, remainder 2 = tens, etc.
+    // We'll extract 4 digits and store in REPL_TEMP area temporarily
+    // REPL_TEMP+0 = units, +1 = tens, +2 = hundreds, +3 = thousands
 
-    // Simple approach: divide by 10 using subtraction
-    // BC / 10: count subtractions, remainder in BC
-    code.push(LD_D_N);
-    code.push(0);                // D = units digit
-    code.push(LD_E_N);
-    code.push(0);                // E = tens digit
+    // === Extract units digit (BC % 10) ===
+    // Use DE as 16-bit quotient counter
+    code.push(LD_DE_NN);
+    emit_u16(code, 0);           // DE = quotient counter = 0
 
-    // Extract units digit: BC % 10
     let units_loop = code.len() as u16;
+    // Subtract 10 from BC
     code.push(LD_A_C);
     code.push(SUB_N);
     code.push(10);
@@ -1666,26 +1663,27 @@ fn emit_bcd_div_routine(code: &mut Vec<u8>, bcd_sub: u16) {
     code.push(SBC_A_N);
     code.push(0);
     code.push(LD_B_A);
-    let units_done = jr_placeholder(code, JR_C_N);  // If BC < 10, done
-    code.push(INC_D);            // units counter (actually quotient)
+    let units_done = jr_placeholder(code, JR_C_N);  // If BC < 0 (borrow), done
+    code.push(INC_DE);           // quotient++ (16-bit)
     code.push(JP_NN);
     emit_u16(code, units_loop);
 
     patch_jr(code, units_done);
-    // Add back 10 to get actual units digit
+    // BC went negative, add back 10 to get remainder (units digit)
     code.push(LD_A_C);
     code.push(ADD_A_N);
     code.push(10);
-    code.push(LD_E_A);           // E = units digit (0-9)
+    code.push(LD_NN_A);
+    emit_u16(code, REPL_TEMP);   // Store units digit at REPL_TEMP+0
 
-    // D now contains BC / 10, need to extract tens digit
-    code.push(LD_B_N);
-    code.push(0);
-    code.push(LD_C_D);           // BC = quotient (0-999)
-    code.push(LD_D_N);
-    code.push(0);                // D = tens digit counter
+    // BC = DE (quotient becomes new dividend)
+    code.push(LD_B_D);
+    code.push(LD_C_E);
 
-    // Extract tens digit: BC % 10
+    // === Extract tens digit (BC % 10) ===
+    code.push(LD_DE_NN);
+    emit_u16(code, 0);           // DE = quotient counter = 0
+
     let tens_loop = code.len() as u16;
     code.push(LD_A_C);
     code.push(SUB_N);
@@ -1696,7 +1694,7 @@ fn emit_bcd_div_routine(code: &mut Vec<u8>, bcd_sub: u16) {
     code.push(0);
     code.push(LD_B_A);
     let tens_done = jr_placeholder(code, JR_C_N);
-    code.push(INC_D);
+    code.push(INC_DE);
     code.push(JP_NN);
     emit_u16(code, tens_loop);
 
@@ -1704,44 +1702,69 @@ fn emit_bcd_div_routine(code: &mut Vec<u8>, bcd_sub: u16) {
     code.push(LD_A_C);
     code.push(ADD_A_N);
     code.push(10);
-    // A = tens digit, D = hundreds (0-99)
-    // Combine into packed byte: high nibble = tens, low nibble = units
-    code.push(RLA);
-    code.push(RLA);
-    code.push(RLA);
-    code.push(RLA);
-    code.push(AND_N);
-    code.push(0xF0);             // A = tens << 4
-    code.push(OR_E);             // A = (tens << 4) | units
-    code.push(POP_HL);           // HL = result + 27
-    code.push(LD_HL_A);          // Store low byte
+    code.push(LD_NN_A);
+    emit_u16(code, REPL_TEMP + 1);  // Store tens digit
 
-    // Now D = hundreds (0-99), need to split and store at byte 26
-    code.push(DEC_HL);           // HL = result + 26
-    code.push(LD_A_D);           // A = hundreds (0-99)
-    // Convert A to packed BCD
-    code.push(LD_B_N);
-    code.push(0);                // B = thousands digit
+    code.push(LD_B_D);
+    code.push(LD_C_E);           // BC = quotient
+
+    // === Extract hundreds digit (BC % 10) ===
+    code.push(LD_DE_NN);
+    emit_u16(code, 0);
+
     let hunds_loop = code.len() as u16;
+    code.push(LD_A_C);
     code.push(SUB_N);
     code.push(10);
+    code.push(LD_C_A);
+    code.push(LD_A_B);
+    code.push(SBC_A_N);
+    code.push(0);
+    code.push(LD_B_A);
     let hunds_done = jr_placeholder(code, JR_C_N);
-    code.push(INC_B);
+    code.push(INC_DE);
     code.push(JP_NN);
     emit_u16(code, hunds_loop);
 
     patch_jr(code, hunds_done);
+    code.push(LD_A_C);
     code.push(ADD_A_N);
-    code.push(10);               // A = hundreds digit (0-9)
-    code.push(LD_C_A);           // C = hundreds
-    code.push(LD_A_B);           // A = thousands (0-9)
-    code.push(RLA);
-    code.push(RLA);
-    code.push(RLA);
-    code.push(RLA);
-    code.push(AND_N);
-    code.push(0xF0);
-    code.push(OR_C);             // A = (thousands << 4) | hundreds
+    code.push(10);
+    code.push(LD_NN_A);
+    emit_u16(code, REPL_TEMP + 2);  // Store hundreds digit
+
+    // BC = DE (quotient = thousands digit, should be 0-9)
+    code.push(LD_A_E);           // A = thousands digit (low byte of quotient)
+    code.push(LD_NN_A);
+    emit_u16(code, REPL_TEMP + 3);  // Store thousands digit
+
+    // === Pack digits into BCD bytes ===
+    // Low byte (offset 27): (tens << 4) | units
+    code.push(LD_A_NN_IND);
+    emit_u16(code, REPL_TEMP + 1);  // A = tens
+    code.push(RLCA);
+    code.push(RLCA);
+    code.push(RLCA);
+    code.push(RLCA);             // A = tens << 4
+    code.push(LD_B_A);           // B = tens << 4
+    code.push(LD_A_NN_IND);
+    emit_u16(code, REPL_TEMP);   // A = units
+    code.push(OR_B);             // A = (tens << 4) | units
+    code.push(POP_HL);           // HL = result + 27 [stack: result]
+    code.push(LD_HL_A);          // Store low byte
+
+    // High byte (offset 26): (thousands << 4) | hundreds
+    code.push(DEC_HL);           // HL = result + 26
+    code.push(LD_A_NN_IND);
+    emit_u16(code, REPL_TEMP + 3);  // A = thousands
+    code.push(RLCA);
+    code.push(RLCA);
+    code.push(RLCA);
+    code.push(RLCA);             // A = thousands << 4
+    code.push(LD_B_A);           // B = thousands << 4
+    code.push(LD_A_NN_IND);
+    emit_u16(code, REPL_TEMP + 2);  // A = hundreds
+    code.push(OR_B);             // A = (thousands << 4) | hundreds
     code.push(LD_HL_A);          // Store high byte
 
     code.push(POP_HL);           // Return result ptr
