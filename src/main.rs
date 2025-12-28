@@ -15,12 +15,14 @@ fn print_usage(program: &str) {
     eprintln!("bc80 - Arbitrary-precision calculator for Z80");
     eprintln!();
     eprintln!("Usage: {} [options] <file.bc>", program);
+    eprintln!("       {} --repl FILE   Generate standalone REPL ROM", program);
     eprintln!();
     eprintln!("Options:");
     eprintln!("  --tokens     Show tokenized output");
     eprintln!("  --ast        Show parsed AST");
     eprintln!("  --bytecode   Show compiled bytecode");
     eprintln!("  --rom FILE   Generate Z80 ROM image");
+    eprintln!("  --repl FILE  Generate standalone REPL ROM (no input file needed)");
     eprintln!("  -o FILE      Output file (default: stdout for bytecode)");
     eprintln!("  -h, --help   Show this help");
 }
@@ -37,6 +39,7 @@ fn main() {
     let mut show_ast = false;
     let mut show_bytecode = false;
     let mut rom_file: Option<String> = None;
+    let mut repl_file: Option<String> = None;
     let mut output_file: Option<String> = None;
     let mut input_file: Option<String> = None;
 
@@ -52,6 +55,15 @@ fn main() {
                     rom_file = Some(args[i].clone());
                 } else {
                     eprintln!("Error: --rom requires a filename");
+                    process::exit(1);
+                }
+            }
+            "--repl" => {
+                i += 1;
+                if i < args.len() {
+                    repl_file = Some(args[i].clone());
+                } else {
+                    eprintln!("Error: --repl requires a filename");
                     process::exit(1);
                 }
             }
@@ -82,6 +94,21 @@ fn main() {
             }
         }
         i += 1;
+    }
+
+    // Handle --repl mode (doesn't require input file)
+    if let Some(repl_path) = repl_file {
+        let rom = z80::generate_repl_rom();
+        match fs::write(&repl_path, &rom) {
+            Ok(_) => {
+                eprintln!("Wrote {} bytes REPL ROM to {}", rom.len(), repl_path);
+            }
+            Err(e) => {
+                eprintln!("Error writing REPL ROM: {}", e);
+                process::exit(1);
+            }
+        }
+        return;
     }
 
     let input_file = match input_file {

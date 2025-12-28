@@ -62,17 +62,24 @@ mod opcodes {
     pub const LD_B_C: u8 = 0x41;
     pub const LD_B_D: u8 = 0x42;
     pub const LD_B_E: u8 = 0x43;
+    pub const LD_B_H: u8 = 0x44;
+    pub const LD_B_L: u8 = 0x45;
+    pub const LD_C_H: u8 = 0x4C;
+    pub const LD_C_L: u8 = 0x4D;
     pub const LD_C_B: u8 = 0x48;
     pub const LD_C_D: u8 = 0x4A;
     pub const LD_C_E: u8 = 0x4B;
     pub const LD_D_B: u8 = 0x50;
     pub const LD_D_C: u8 = 0x51;
+    pub const LD_D_H: u8 = 0x54;
+    pub const LD_E_L: u8 = 0x5D;
     pub const LD_E_B: u8 = 0x58;
     pub const LD_E_C: u8 = 0x59;
     pub const LD_H_B: u8 = 0x60;
     pub const LD_H_D: u8 = 0x62;
     pub const LD_H_E: u8 = 0x63;
     pub const LD_L_B: u8 = 0x68;
+    pub const LD_L_C: u8 = 0x69;
     pub const LD_L_D: u8 = 0x6A;
     pub const LD_L_E: u8 = 0x6B;
 
@@ -148,6 +155,8 @@ mod opcodes {
     pub const XOR_A: u8 = 0xAF;
     pub const XOR_B: u8 = 0xA8;
     pub const XOR_C: u8 = 0xA9;
+    pub const XOR_D: u8 = 0xAA;
+    pub const XOR_E: u8 = 0xAB;
     pub const XOR_HL: u8 = 0xAE;
     pub const XOR_N: u8 = 0xEE;
 
@@ -228,18 +237,41 @@ mod opcodes {
     pub const OUT_N_A: u8 = 0xD3;
     pub const IN_A_N: u8 = 0xDB;
 
+    // ED-prefixed instructions
     pub const ED_PREFIX: u8 = 0xED;
-    pub const LDIR: u8 = 0xB0;
-    pub const LDDR: u8 = 0xB8;
-    pub const CPIR: u8 = 0xB1;
-    pub const SBC_HL_BC: u8 = 0x42;
-    pub const SBC_HL_DE: u8 = 0x52;
-    pub const ADC_HL_BC: u8 = 0x4A;
-    pub const ADC_HL_DE: u8 = 0x5A;
-    pub const LD_NN_BC: u8 = 0x43;
-    pub const LD_NN_DE: u8 = 0x53;
-    pub const LD_BC_NN_IND: u8 = 0x4B;
-    pub const LD_DE_NN_IND: u8 = 0x5B;
+    pub const LDIR_OP: u8 = 0xB0;
+    pub const LDDR_OP: u8 = 0xB8;
+    pub const CPIR_OP: u8 = 0xB1;
+    pub const SBC_HL_BC_OP: u8 = 0x42;
+    pub const SBC_HL_DE_OP: u8 = 0x52;
+    pub const ADC_HL_BC_OP: u8 = 0x4A;
+    pub const ADC_HL_DE_OP: u8 = 0x5A;
+    pub const LD_NN_BC_OP: u8 = 0x43;
+    pub const LD_NN_DE_OP: u8 = 0x53;
+    pub const LD_BC_NN_IND_OP: u8 = 0x4B;
+    pub const LD_DE_NN_IND_OP: u8 = 0x5B;
+
+    // IX register instructions (require DD prefix)
+    pub const IX_PREFIX: u8 = 0xDD;
+    pub const PUSH_IX_OP: u8 = 0xE5;  // DD E5 = PUSH IX
+    pub const POP_IX_OP: u8 = 0xE1;   // DD E1 = POP IX
+    pub const LD_IX_NN_OP: u8 = 0x21; // DD 21 nn nn = LD IX, nn
+    pub const ADD_IX_BC_OP: u8 = 0x09; // DD 09 = ADD IX, BC
+    pub const ADD_IX_DE_OP: u8 = 0x19; // DD 19 = ADD IX, DE
+    pub const LD_A_IX_D_OP: u8 = 0x7E; // DD 7E d = LD A, (IX+d)
+    pub const LD_B_IX_D_OP: u8 = 0x46; // DD 46 d = LD B, (IX+d)
+    pub const LD_C_IX_D_OP: u8 = 0x4E; // DD 4E d = LD C, (IX+d)
+    pub const LD_D_IX_D_OP: u8 = 0x56; // DD 56 d = LD D, (IX+d)
+    pub const LD_E_IX_D_OP: u8 = 0x5E; // DD 5E d = LD E, (IX+d)
+    pub const LD_H_IX_D_OP: u8 = 0x66; // DD 66 d = LD H, (IX+d)
+    pub const LD_L_IX_D_OP: u8 = 0x6E; // DD 6E d = LD L, (IX+d)
+    pub const LD_IX_D_A_OP: u8 = 0x77; // DD 77 d = LD (IX+d), A
+    pub const LD_IX_D_B_OP: u8 = 0x70; // DD 70 d = LD (IX+d), B
+    pub const LD_IX_D_C_OP: u8 = 0x71; // DD 71 d = LD (IX+d), C
+    pub const LD_IX_D_D_OP: u8 = 0x72; // DD 72 d = LD (IX+d), D
+    pub const LD_IX_D_E_OP: u8 = 0x73; // DD 73 d = LD (IX+d), E
+    pub const INC_IX_OP: u8 = 0x23;   // DD 23 = INC IX
+    pub const DEC_IX_OP: u8 = 0x2B;   // DD 2B = DEC IX
 }
 
 use opcodes::*;
@@ -690,6 +722,98 @@ fn patch_jr(code: &mut Vec<u8>, pos: usize) {
     code[pos] = offset as u8;
 }
 
+// Absolute jump helpers for long jumps (>127 bytes)
+fn jp_z_placeholder(code: &mut Vec<u8>) -> usize {
+    code.push(JP_Z_NN);
+    let pos = code.len();
+    emit_u16(code, 0);  // Placeholder
+    pos
+}
+
+fn jp_placeholder(code: &mut Vec<u8>) -> usize {
+    code.push(JP_NN);
+    let pos = code.len();
+    emit_u16(code, 0);  // Placeholder
+    pos
+}
+
+fn patch_jp(code: &mut Vec<u8>, pos: usize) {
+    let addr = code.len() as u16;
+    code[pos] = (addr & 0xFF) as u8;
+    code[pos + 1] = (addr >> 8) as u8;
+}
+
+// IX register helper functions
+fn emit_push_ix(code: &mut Vec<u8>) {
+    code.push(IX_PREFIX);
+    code.push(PUSH_IX_OP);
+}
+
+fn emit_pop_ix(code: &mut Vec<u8>) {
+    code.push(IX_PREFIX);
+    code.push(POP_IX_OP);
+}
+
+fn emit_ld_ix_nn(code: &mut Vec<u8>, val: u16) {
+    code.push(IX_PREFIX);
+    code.push(LD_IX_NN_OP);
+    emit_u16(code, val);
+}
+
+fn emit_add_ix_bc(code: &mut Vec<u8>) {
+    code.push(IX_PREFIX);
+    code.push(ADD_IX_BC_OP);
+}
+
+fn emit_add_ix_de(code: &mut Vec<u8>) {
+    code.push(IX_PREFIX);
+    code.push(ADD_IX_DE_OP);
+}
+
+fn emit_ld_a_ix_d(code: &mut Vec<u8>, d: i8) {
+    code.push(IX_PREFIX);
+    code.push(LD_A_IX_D_OP);
+    code.push(d as u8);
+}
+
+fn emit_ld_l_ix_d(code: &mut Vec<u8>, d: i8) {
+    code.push(IX_PREFIX);
+    code.push(LD_L_IX_D_OP);
+    code.push(d as u8);
+}
+
+fn emit_ld_h_ix_d(code: &mut Vec<u8>, d: i8) {
+    code.push(IX_PREFIX);
+    code.push(LD_H_IX_D_OP);
+    code.push(d as u8);
+}
+
+fn emit_inc_ix(code: &mut Vec<u8>) {
+    code.push(IX_PREFIX);
+    code.push(INC_IX_OP);
+}
+
+fn emit_dec_ix(code: &mut Vec<u8>) {
+    code.push(IX_PREFIX);
+    code.push(DEC_IX_OP);
+}
+
+// ED-prefixed instruction helpers
+fn emit_sbc_hl_de(code: &mut Vec<u8>) {
+    code.push(ED_PREFIX);
+    code.push(SBC_HL_DE_OP);
+}
+
+fn emit_sbc_hl_bc(code: &mut Vec<u8>) {
+    code.push(ED_PREFIX);
+    code.push(SBC_HL_BC_OP);
+}
+
+fn emit_ldir(code: &mut Vec<u8>) {
+    code.push(ED_PREFIX);
+    code.push(LDIR_OP);
+}
+
 fn init_vm_state(code: &mut Vec<u8>) {
     // VM_PC = BYTECODE_ORG
     code.push(LD_HL_NN);
@@ -787,6 +911,7 @@ fn init_constants(code: &mut Vec<u8>) {
 const ACIA_STATUS_PORT: u8 = 0x80;
 const ACIA_DATA_PORT: u8 = 0x81;
 const ACIA_TX_READY: u8 = 0x02;  // Bit 1 = TX ready
+const ACIA_RX_READY: u8 = 0x01;  // Bit 0 = RX ready
 
 fn emit_acia_wait(code: &mut Vec<u8>) {
     // Wait for ACIA TX ready (bit 1 of status register)
@@ -835,6 +960,7 @@ fn emit_print_bcd_number(code: &mut Vec<u8>, acia_out: u16) {
     // Input: HL = pointer to BCD number
     // Format: [sign][len][scale][packed digits...]
     // E = 0 initially (flag: have we printed any digit yet?)
+    // C = scale (number of decimal places)
 
     code.push(PUSH_HL);
     code.push(LD_E_N);
@@ -858,15 +984,16 @@ fn emit_print_bcd_number(code: &mut Vec<u8>, acia_out: u16) {
     code.push(INC_HL);
 
     // Get length
-    code.push(LD_B_HL);  // B = digit count
+    code.push(LD_B_HL);  // B = digit count (50)
     code.push(INC_HL);
 
-    // Get scale (for now ignore, print all as integer)
-    code.push(LD_C_HL);  // C = scale (unused for now)
+    // Get scale for decimal point placement
+    code.push(LD_C_HL);  // C = scale (number of decimal places)
     code.push(INC_HL);
 
     // HL now points to first packed byte
     // B = remaining digit count
+    // C = scale (when B == C, print decimal point)
     // E = 0 (no digits printed yet)
 
     // Print digits - loop until B = 0
@@ -891,7 +1018,7 @@ fn emit_print_bcd_number(code: &mut Vec<u8>, acia_out: u16) {
     code.push(AND_N);
     code.push(0x0F);     // A = high digit
 
-    // Skip leading zeros: if A==0 AND E==0 AND B>1, don't print
+    // Skip leading zeros: if A==0 AND E==0 AND B>1 AND B>C (still in integer part), don't print
     code.push(OR_A);     // Is digit 0?
     let not_zero_high = jr_placeholder(code, JR_NZ_N);
     code.push(LD_A_E);   // Have we printed anything yet?
@@ -901,12 +1028,40 @@ fn emit_print_bcd_number(code: &mut Vec<u8>, acia_out: u16) {
     code.push(CP_N);
     code.push(1);
     let is_last_high = jr_placeholder(code, JR_Z_N);
-    // Skip this digit (it's a leading zero)
+    // Also don't skip if we're in the fractional part (B <= C)
+    code.push(LD_A_B);
+    code.push(CP_C);     // Compare B with C
+    let in_fraction_high = jr_placeholder(code, JR_C_N);  // If B < C, we're in fraction
+    let eq_scale_high = jr_placeholder(code, JR_Z_N);     // If B == C, we're at decimal point
+    // Skip this digit (it's a leading zero in integer part)
     let skip_high = jr_placeholder(code, JR_N);
 
     patch_jr(code, not_zero_high);
     patch_jr(code, already_printed_high);
     patch_jr(code, is_last_high);
+    patch_jr(code, in_fraction_high);
+    patch_jr(code, eq_scale_high);
+
+    // Check if we need to print decimal point before this digit
+    // If B == C and C > 0 and E == 1, print '.'
+    code.push(LD_A_B);
+    code.push(CP_C);
+    let no_decimal_high = jr_placeholder(code, JR_NZ_N);  // B != C
+    code.push(LD_A_C);
+    code.push(OR_A);
+    let no_scale_high = jr_placeholder(code, JR_Z_N);     // C == 0
+    code.push(LD_A_E);
+    code.push(OR_A);
+    let not_started_high = jr_placeholder(code, JR_Z_N);  // Haven't printed anything
+    // Print decimal point
+    code.push(LD_A_N);
+    code.push(b'.');
+    code.push(CALL_NN);
+    emit_u16(code, acia_out);
+
+    patch_jr(code, no_decimal_high);
+    patch_jr(code, no_scale_high);
+    patch_jr(code, not_started_high);
 
     // Print the high digit
     code.push(LD_A_D);
@@ -938,7 +1093,7 @@ fn emit_print_bcd_number(code: &mut Vec<u8>, acia_out: u16) {
     code.push(AND_N);
     code.push(0x0F);     // A = low digit
 
-    // Skip leading zeros: if A==0 AND E==0 AND B>1, don't print
+    // Skip leading zeros: if A==0 AND E==0 AND B>1 AND B>C, don't print
     code.push(OR_A);     // Is digit 0?
     let not_zero_low = jr_placeholder(code, JR_NZ_N);
     code.push(LD_A_E);   // Have we printed anything yet?
@@ -948,12 +1103,39 @@ fn emit_print_bcd_number(code: &mut Vec<u8>, acia_out: u16) {
     code.push(CP_N);
     code.push(1);
     let is_last_low = jr_placeholder(code, JR_Z_N);
-    // Skip this digit (it's a leading zero)
+    // Also don't skip if we're in the fractional part (B <= C)
+    code.push(LD_A_B);
+    code.push(CP_C);
+    let in_fraction_low = jr_placeholder(code, JR_C_N);
+    let eq_scale_low = jr_placeholder(code, JR_Z_N);
+    // Skip this digit (it's a leading zero in integer part)
     let skip_low_print = jr_placeholder(code, JR_N);
 
     patch_jr(code, not_zero_low);
     patch_jr(code, already_printed_low);
     patch_jr(code, is_last_low);
+    patch_jr(code, in_fraction_low);
+    patch_jr(code, eq_scale_low);
+
+    // Check if we need to print decimal point before this digit
+    code.push(LD_A_B);
+    code.push(CP_C);
+    let no_decimal_low = jr_placeholder(code, JR_NZ_N);
+    code.push(LD_A_C);
+    code.push(OR_A);
+    let no_scale_low = jr_placeholder(code, JR_Z_N);
+    code.push(LD_A_E);
+    code.push(OR_A);
+    let not_started_low = jr_placeholder(code, JR_Z_N);
+    // Print decimal point
+    code.push(LD_A_N);
+    code.push(b'.');
+    code.push(CALL_NN);
+    emit_u16(code, acia_out);
+
+    patch_jr(code, no_decimal_low);
+    patch_jr(code, no_scale_low);
+    patch_jr(code, not_started_low);
 
     // Print the low digit
     code.push(LD_A_D);
@@ -1012,8 +1194,7 @@ fn emit_copy_number(code: &mut Vec<u8>) {
     code.push(LD_BC_NN);
     emit_u16(code, MAX_NUM_SIZE as u16);
     code.push(EX_DE_HL);  // HL = source, DE = dest
-    code.push(ED_PREFIX);
-    code.push(LDIR);
+    emit_ldir(code);
 
     code.push(POP_DE);
     code.push(POP_HL);
@@ -1111,172 +1292,459 @@ fn emit_bcd_sub_routine(code: &mut Vec<u8>) {
     code.push(RET);
 }
 
-fn emit_bcd_mul_routine(code: &mut Vec<u8>, _add_sub: u16) {
-    // Simplified BCD Multiplication for single-digit numbers
-    // Input: DE = second operand ptr, HL = result ptr (contains first operand data)
+fn emit_bcd_mul_routine(code: &mut Vec<u8>, bcd_add: u16) {
+    // BCD Multiplication using repeated addition
+    // Input: DE = multiplier ptr, HL = result ptr (contains multiplicand copy)
     // Output: result in HL
     //
-    // With fixed 50-digit format (25 packed bytes), single-digit numbers are stored as:
-    // [sign][len=50][scale=0][24 bytes of 0x00][0x0d] where d is the digit
-    // The significant digit is at offset 3+24=27 (last packed byte)
+    // Algorithm: result = 0; loop multiplier times: result += multiplicand
+    // Uses REPL_TEMP (0x8700) to save multiplicand
+    // Supports multipliers 0-9999 (4 BCD digits)
 
-    const LAST_BYTE_OFFSET: u8 = 3 + 24;  // 3 header + 24 leading zero bytes
+    // Save result ptr and multiplier ptr
+    code.push(PUSH_HL);          // [stack: result]
+    code.push(PUSH_DE);          // [stack: multiplier, result]
 
-    code.push(PUSH_HL);      // Save result ptr
-
-    // Get first operand's last digit (from result, which is a copy)
-    // Add LAST_BYTE_OFFSET to HL to point to the last packed byte
+    // Copy multiplicand (from HL) to REPL_TEMP
+    code.push(LD_DE_NN);
+    emit_u16(code, REPL_TEMP);
     code.push(LD_BC_NN);
-    emit_u16(code, LAST_BYTE_OFFSET as u16);
-    code.push(ADD_HL_BC);
-    code.push(LD_A_HL);      // A = last packed byte of first operand
-    code.push(AND_N);
-    code.push(0x0F);         // Low nibble (single digit)
-    code.push(LD_B_A);       // B = digit of first operand
+    emit_u16(code, 28);
+    emit_ldir(code);             // Copy multiplicand to REPL_TEMP
 
-    // Get second operand's last digit
-    // At this point: B = first operand digit, HL = result+27, DE = second operand ptr
-    // Save B and HL, then calculate second operand + 27
-    code.push(PUSH_HL);      // Save result+27 position [stack: result+27]
-    code.push(PUSH_BC);      // Save B (first operand digit) [stack: BC, result+27]
-    code.push(EX_DE_HL);     // HL = second operand ptr, DE = result+27
+    // Get multiplier value from last 2 packed bytes (up to 4 BCD digits = 0-9999)
+    code.push(POP_HL);           // HL = multiplier ptr
     code.push(LD_BC_NN);
-    emit_u16(code, LAST_BYTE_OFFSET as u16);
-    code.push(ADD_HL_BC);    // HL = second operand + 27
-    code.push(LD_A_HL);      // A = last packed byte of second operand
-    code.push(AND_N);
-    code.push(0x0F);         // Low nibble (single digit)
-    code.push(LD_C_A);       // C = digit of second operand
-    code.push(POP_AF);       // A = saved B (first operand digit), discard F [stack: result+27]
-    code.push(LD_B_A);       // B = first operand digit
-    code.push(POP_HL);       // HL = result+27 [stack: empty]
+    emit_u16(code, 26);
+    code.push(ADD_HL_BC);        // HL = multiplier + 26 (byte 26)
 
-    // Multiply B * C using repeated addition with DAA
-    code.push(XOR_A);        // A = 0 (accumulator for result)
-    code.push(LD_D_A);       // D = 0 (high digit overflow counter)
+    // Read byte 26 (high 2 digits) and byte 27 (low 2 digits)
+    code.push(LD_D_HL);          // D = byte 26 (packed BCD)
+    code.push(INC_HL);
+    code.push(LD_E_HL);          // E = byte 27 (packed BCD)
+    // Save these for later
+    code.push(PUSH_DE);          // [stack: packed bytes, result]
 
-    // If C = 0, skip multiplication (result is 0)
-    code.push(LD_A_C);
-    code.push(OR_A);
-    let skip_mul = jr_placeholder(code, JR_Z_N);
-
-    // Add B to accumulator C times
-    code.push(XOR_A);        // A = 0 (accumulator)
-    let mul_loop = code.len() as u16;
-    code.push(ADD_A_B);      // A = A + B
-    code.push(DAA);          // Decimal adjust
-    let no_carry = jr_placeholder(code, JR_NC_N);
-    code.push(INC_D);        // Carry -> D
-    patch_jr(code, no_carry);
-    code.push(DEC_C);
-    code.push(LD_E_A);       // Save A temporarily
-    code.push(LD_A_C);
-    code.push(OR_A);
-    code.push(LD_A_E);       // Restore A
-    code.push(JR_NZ_N);
-    let offset = (mul_loop as i16 - code.len() as i16 - 1) as i8;
-    code.push(offset as u8);
-
-    // Now A = BCD result (e.g., 0x12 for twelve), D = overflow (> 99)
-    // The result goes in the last 1-2 bytes of the result slot
-    // For the fixed format, we keep len=50 and just update the last 1-2 bytes
-
-    patch_jr(code, skip_mul);
-    code.push(LD_E_A);       // E = BCD result (low byte)
-
-    // HL is already pointing to the last byte of result
-    // Store the result there (single digit result goes in low nibble)
+    // Convert E (byte 27, low 2 digits) to binary (0-99)
     code.push(LD_A_E);
-    code.push(LD_HL_A);      // Store result in last byte
+    code.push(LD_B_A);           // B = save packed byte
+    code.push(AND_N);
+    code.push(0x0F);             // A = low digit
+    code.push(LD_C_A);           // C = low digit
+    code.push(LD_A_B);           // A = packed byte
+    code.push(RRCA);
+    code.push(RRCA);
+    code.push(RRCA);
+    code.push(RRCA);
+    code.push(AND_N);
+    code.push(0x0F);             // A = high digit
+    code.push(LD_B_A);           // B = high digit
+    code.push(ADD_A_A);          // A = 2 * high
+    code.push(ADD_A_A);          // A = 4 * high
+    code.push(ADD_A_B);          // A = 5 * high
+    code.push(ADD_A_A);          // A = 10 * high
+    code.push(ADD_A_C);          // A = 10 * high + low (0-99)
+    code.push(LD_E_A);           // E = byte27 binary value
 
-    // If result >= 0x10, we need to update the second-to-last byte too
-    code.push(CP_N);
-    code.push(0x10);
-    let no_high = jr_placeholder(code, JR_C_N);  // Jump if E < 0x10
+    // Convert D (byte 26, high 2 digits) to binary (0-99)
+    code.push(POP_HL);           // H = byte26, L = byte27 (packed)
+    code.push(PUSH_DE);          // Save E (low value) [stack: E, result]
+    code.push(LD_A_H);
+    code.push(LD_B_A);           // B = save packed byte
+    code.push(AND_N);
+    code.push(0x0F);             // A = low digit
+    code.push(LD_C_A);           // C = low digit
+    code.push(LD_A_B);           // A = packed byte
+    code.push(RRCA);
+    code.push(RRCA);
+    code.push(RRCA);
+    code.push(RRCA);
+    code.push(AND_N);
+    code.push(0x0F);             // A = high digit
+    code.push(LD_B_A);           // B = high digit
+    code.push(ADD_A_A);          // A = 2 * high
+    code.push(ADD_A_A);          // A = 4 * high
+    code.push(ADD_A_B);          // A = 5 * high
+    code.push(ADD_A_A);          // A = 10 * high
+    code.push(ADD_A_C);          // A = 10 * high + low (0-99)
+    // A = byte26 binary value (0-99), need to multiply by 100
 
-    // For 2-digit results like 12 (0x12), the byte is already correctly packed
-    // But if we have carry in D, we'd need to handle 3+ digits (not implemented)
+    // Compute A * 100: 100 = 64 + 32 + 4
+    // Result in HL (16-bit)
+    code.push(LD_L_A);
+    code.push(LD_H_N);
+    code.push(0);                // HL = A (0-99)
 
-    patch_jr(code, no_high);
+    code.push(ADD_HL_HL);        // HL = A * 2
+    code.push(ADD_HL_HL);        // HL = A * 4
+    code.push(PUSH_HL);          // Save A * 4
+    code.push(ADD_HL_HL);        // HL = A * 8
+    code.push(ADD_HL_HL);        // HL = A * 16
+    code.push(ADD_HL_HL);        // HL = A * 32
+    code.push(PUSH_HL);          // Save A * 32
+    code.push(ADD_HL_HL);        // HL = A * 64
+    code.push(POP_BC);           // BC = A * 32
+    code.push(ADD_HL_BC);        // HL = A * 96
+    code.push(POP_BC);           // BC = A * 4
+    code.push(ADD_HL_BC);        // HL = A * 100
 
-    code.push(POP_HL);       // Restore result ptr
+    // Add low byte (E) to get total: HL = high*100 + low
+    code.push(POP_DE);           // E = low value [stack: result]
+    code.push(LD_D_N);
+    code.push(0);                // DE = low value (0-99)
+    code.push(ADD_HL_DE);        // HL = total (0-9999)
+
+    // BC = 16-bit loop counter
+    code.push(LD_B_H);
+    code.push(LD_C_L);
+
+    // Zero the result buffer
+    code.push(POP_HL);           // HL = result ptr [stack: empty]
+    code.push(PUSH_HL);          // [stack: result]
+    code.push(PUSH_BC);          // [stack: counter, result]
+
+    code.push(INC_HL);
+    code.push(INC_HL);
+    code.push(INC_HL);           // Skip header
+    code.push(LD_B_N);
+    code.push(25);
+    code.push(XOR_A);
+    let zero_loop = code.len() as u16;
+    code.push(LD_HL_A);
+    code.push(INC_HL);
+    code.push(DJNZ_N);
+    let back = (zero_loop as i16 - code.len() as i16 - 1) as i8;
+    code.push(back as u8);
+
+    // Set up result header
+    code.push(POP_BC);           // BC = counter
+    code.push(POP_HL);           // HL = result ptr
+    code.push(PUSH_HL);          // [stack: result]
+    code.push(XOR_A);
+    code.push(LD_HL_A);          // sign = 0
+    code.push(INC_HL);
+    code.push(LD_A_N);
+    code.push(50);
+    code.push(LD_HL_A);          // len = 50
+    code.push(INC_HL);
+    code.push(XOR_A);
+    code.push(LD_HL_A);          // scale = 0
+
+    // Check if counter is 0
+    code.push(LD_A_B);
+    code.push(OR_C);
+    let mul_done = jr_placeholder(code, JR_Z_N);
+
+    // Loop: add multiplicand to result BC times (16-bit counter)
+    let mul_loop = code.len() as u16;
+
+    code.push(POP_HL);           // HL = result
+    code.push(PUSH_HL);
+    code.push(PUSH_BC);          // Save counter
+
+    code.push(LD_DE_NN);
+    emit_u16(code, REPL_TEMP);
+    code.push(CALL_NN);
+    emit_u16(code, bcd_add);
+
+    code.push(POP_BC);           // Restore counter
+
+    // Decrement BC (16-bit)
+    code.push(DEC_BC);
+    code.push(LD_A_B);
+    code.push(OR_C);
+    code.push(JR_NZ_N);
+    let back2 = (mul_loop as i16 - code.len() as i16 - 1) as i8;
+    code.push(back2 as u8);
+
+    patch_jr(code, mul_done);
+
+    code.push(POP_HL);           // Return result ptr
     code.push(RET);
 }
 
-fn emit_bcd_div_routine(code: &mut Vec<u8>, _sub_sub: u16) {
+fn emit_bcd_mul10_routine(code: &mut Vec<u8>) {
+    // Multiply BCD number by 10 (shift all nibbles left by 1)
+    // Input: HL = BCD pointer
+    // Output: BCD is multiplied by 10 in place
+    // Preserves: HL (restored to point to BCD header)
+    use opcodes::*;
+
+    code.push(PUSH_HL);          // Save original HL
+
+    // Skip header (3 bytes) and point to last packed byte
+    code.push(LD_BC_NN);
+    emit_u16(code, 3 + 24);      // Header + 24 bytes = last packed byte
+    code.push(ADD_HL_BC);
+
+    // B = counter (25 bytes), A = carry (initially 0)
+    code.push(LD_B_N);
+    code.push(25);
+    code.push(XOR_A);            // Carry = 0
+
+    // Loop: process each byte from LSB to MSB
+    let mul10_loop = code.len() as u16;
+    code.push(LD_C_A);           // C = save carry
+    code.push(LD_A_HL);          // A = current byte
+    code.push(PUSH_AF);          // Save original byte
+    // A = (original << 4) & 0xF0
+    code.push(RLCA);
+    code.push(RLCA);
+    code.push(RLCA);
+    code.push(RLCA);             // A = rotated left 4
+    code.push(AND_N);
+    code.push(0xF0);             // Keep only high nibble (was low)
+    code.push(OR_C);             // Add carry from previous byte
+    code.push(LD_HL_A);          // Store new byte
+    code.push(POP_AF);           // Get original byte
+    // A = (original >> 4) & 0x0F (carry for next byte)
+    code.push(RRCA);
+    code.push(RRCA);
+    code.push(RRCA);
+    code.push(RRCA);
+    code.push(AND_N);
+    code.push(0x0F);             // Carry = high nibble of original
+    code.push(DEC_HL);           // Move to previous byte
+    code.push(DJNZ_N);
+    let back = (mul10_loop as i16 - code.len() as i16 - 1) as i8;
+    code.push(back as u8);
+
+    code.push(POP_HL);           // Restore original HL
+    code.push(RET);
+}
+
+fn emit_bcd_div_routine(code: &mut Vec<u8>, bcd_sub: u16) {
     // BCD Division using repeated subtraction
-    // Input: DE = second operand (divisor), HL = result ptr (holds dividend copy)
+    // Input: DE = divisor ptr, HL = result ptr (holds dividend copy)
     // Result: quotient in HL
     //
-    // With fixed 50-digit format, single-digit numbers are at offset 27 (last packed byte)
-    // The low nibble contains the digit
+    // Algorithm:
+    // 1. Copy dividend (HL) to REPL_TEMP (working copy)
+    // 2. quotient = 0 (16-bit binary counter)
+    // 3. Loop: subtract divisor from REPL_TEMP
+    //    - Check if result went negative (borrow from subtraction)
+    //    - If negative, add divisor back and break
+    //    - If positive/zero, increment quotient and continue
+    // 4. Convert binary quotient to BCD and store in result
+    //
+    // Uses REPL_TEMP as working dividend, REPL_TEMP2 to save divisor ptr
 
-    const LAST_BYTE_OFFSET: u8 = 3 + 24;  // 3 header + 24 leading zero bytes
+    // Save pointers
+    code.push(PUSH_HL);          // [stack: result (dividend copy)]
+    code.push(PUSH_DE);          // [stack: divisor, result]
 
-    code.push(PUSH_HL);      // Save result ptr (dividend copy)
-    code.push(PUSH_DE);      // Save divisor ptr
-
-    // Get dividend's last digit (from result)
-    code.push(LD_BC_NN);
-    emit_u16(code, LAST_BYTE_OFFSET as u16);
-    code.push(ADD_HL_BC);
-    code.push(LD_A_HL);      // A = last packed byte of dividend
-    code.push(AND_N);
-    code.push(0x0F);         // Low nibble
-    code.push(LD_B_A);       // B = dividend digit
-
-    // Get divisor's last digit
-    code.push(POP_HL);       // HL = divisor ptr
-    code.push(PUSH_HL);      // Save it again
+    // Copy dividend to REPL_TEMP
     code.push(LD_DE_NN);
-    emit_u16(code, LAST_BYTE_OFFSET as u16);
-    code.push(ADD_HL_DE);
-    code.push(LD_A_HL);      // A = last packed byte of divisor
-    code.push(AND_N);
-    code.push(0x0F);         // Low nibble
-    code.push(LD_C_A);       // C = divisor digit
+    emit_u16(code, REPL_TEMP);
+    code.push(LD_BC_NN);
+    emit_u16(code, 28);
+    emit_ldir(code);             // Copy dividend to REPL_TEMP
 
-    // Check divisor not zero
-    code.push(LD_A_C);
-    code.push(OR_A);
-    code.push(POP_DE);       // Discard saved divisor ptr
-    code.push(POP_HL);       // HL = result ptr
-    let not_zero = jr_placeholder(code, JR_NZ_N);
-    // Divisor is 0, just return (result stays as dividend copy which is wrong, but avoids infinite loop)
-    code.push(RET);
+    // Initialize quotient counter (16-bit) to 0
+    // Stack is [divisor, result], BC = 0 (quotient)
+    code.push(LD_BC_NN);
+    emit_u16(code, 0);           // BC = quotient = 0
 
-    patch_jr(code, not_zero);
-
-    code.push(PUSH_HL);      // Save result ptr
-
-    // Count subtractions: quotient = 0
-    code.push(LD_D_N);
-    code.push(0);            // D = quotient
-
-    // While B >= C, subtract and increment quotient
+    // Division loop: REPL_TEMP -= divisor until negative
+    // Invariant at loop start: BC = quotient, stack = [divisor, result]
     let div_loop = code.len() as u16;
-    code.push(LD_A_B);
-    code.push(CP_C);         // Compare dividend with divisor
-    let done_div = jr_placeholder(code, JR_C_N);  // If B < C, done
 
-    code.push(LD_A_B);
-    code.push(SUB_C);
-    code.push(LD_B_A);       // B = B - C (new dividend) - no DAA needed for single digit
-    code.push(INC_D);        // quotient++
+    // Get divisor from stack (peek without popping)
+    code.push(POP_DE);           // DE = divisor, stack = [result]
+    code.push(PUSH_DE);          // stack = [divisor, result]
+    code.push(PUSH_BC);          // Save quotient, stack = [quotient, divisor, result]
 
+    // Call bcd_sub: HL = REPL_TEMP (dividend), DE = divisor
+    code.push(LD_HL_NN);
+    emit_u16(code, REPL_TEMP);
+    code.push(CALL_NN);
+    emit_u16(code, bcd_sub);     // REPL_TEMP = REPL_TEMP - divisor
+
+    // Check if we went negative by examining if any packed byte is >= 0x99
+    // After BCD subtraction with borrow, bytes that underflowed show as 0x99
+    code.push(LD_HL_NN);
+    emit_u16(code, REPL_TEMP + 3);  // First packed byte (after header)
+    code.push(LD_A_HL);
+    code.push(CP_N);
+    code.push(0x99);
+    let done_div = jr_placeholder(code, JR_NC_N);  // If byte >= 0x99, went negative
+
+    // Subtraction was valid, increment quotient and continue
+    code.push(POP_BC);           // BC = quotient, stack = [divisor, result]
+    code.push(INC_BC);
+
+    // Check if quotient is getting too large (limit to 9999 = 0x270F)
+    code.push(LD_A_B);
+    code.push(CP_N);
+    code.push(0x27);
+    let keep_going = jr_placeholder(code, JR_C_N);
+    // Quotient overflow, exit
+    let overflow = jp_placeholder(code);
+
+    patch_jr(code, keep_going);
+    // Continue looping - BC has new quotient, stack = [divisor, result]
     code.push(JP_NN);
     emit_u16(code, div_loop);
 
     patch_jr(code, done_div);
+    // Went negative - restore quotient from stack
+    code.push(POP_BC);           // BC = quotient, stack = [divisor, result]
 
-    // Store quotient in result at the last byte
-    code.push(POP_HL);       // HL = result
-    code.push(LD_BC_NN);
-    emit_u16(code, LAST_BYTE_OFFSET as u16);
-    code.push(ADD_HL_BC);    // HL = result + 27
-    code.push(LD_A_D);       // A = quotient (single digit)
-    code.push(LD_HL_A);      // Store in low nibble
+    // Both done_div and overflow converge here
+    // At this point: BC = quotient, stack = [divisor, result]
+    patch_jp(code, overflow);
 
+    // Convert BC (binary quotient 0-9999) to BCD and store in result
+    // BC already has quotient, just clean up stack
+    code.push(POP_DE);           // Discard divisor, stack = [result]
+    code.push(POP_HL);           // HL = result ptr, stack = []
+
+    // Zero the result first
+    code.push(PUSH_HL);
+    code.push(PUSH_BC);          // Save quotient
+    code.push(INC_HL);
+    code.push(INC_HL);
+    code.push(INC_HL);           // Skip header
+    code.push(LD_B_N);
+    code.push(25);
+    code.push(XOR_A);
+    let zero_loop = code.len() as u16;
+    code.push(LD_HL_A);
+    code.push(INC_HL);
+    code.push(DJNZ_N);
+    let back = (zero_loop as i16 - code.len() as i16 - 1) as i8;
+    code.push(back as u8);
+
+    // Set up header
+    code.push(POP_BC);           // Restore quotient
+    code.push(POP_HL);           // HL = result
+    code.push(PUSH_HL);
+    code.push(XOR_A);
+    code.push(LD_HL_A);          // sign = 0
+    code.push(INC_HL);
+    code.push(LD_A_N);
+    code.push(50);
+    code.push(LD_HL_A);          // len = 50
+    code.push(INC_HL);
+    code.push(XOR_A);
+    code.push(LD_HL_A);          // scale = 0
+
+    // Convert BC (binary 0-9999) to BCD at byte 26-27
+    // BC = binary value
+    // We need to convert to packed BCD: high byte at offset 26, low byte at offset 27
+
+    // Binary to BCD conversion using repeated division by 10
+    // quotient % 10 = units digit
+    // (quotient / 10) % 10 = tens digit, etc.
+
+    // For up to 9999, we need 4 digits = 2 packed bytes
+    code.push(POP_HL);           // HL = result
+    code.push(PUSH_HL);
+    code.push(LD_DE_NN);
+    emit_u16(code, 27);
+    code.push(ADD_HL_DE);        // HL = result + 27 (last packed byte)
+    code.push(PUSH_HL);          // Save position
+
+    // Convert BC to BCD
+    // Divide BC by 10 repeatedly, collect remainders
+    // Remainder 1 = units, remainder 2 = tens, etc.
+
+    // Simple approach: divide by 10 using subtraction
+    // BC / 10: count subtractions, remainder in BC
+    code.push(LD_D_N);
+    code.push(0);                // D = units digit
+    code.push(LD_E_N);
+    code.push(0);                // E = tens digit
+
+    // Extract units digit: BC % 10
+    let units_loop = code.len() as u16;
+    code.push(LD_A_C);
+    code.push(SUB_N);
+    code.push(10);
+    code.push(LD_C_A);
+    code.push(LD_A_B);
+    code.push(SBC_A_N);
+    code.push(0);
+    code.push(LD_B_A);
+    let units_done = jr_placeholder(code, JR_C_N);  // If BC < 10, done
+    code.push(INC_D);            // units counter (actually quotient)
+    code.push(JP_NN);
+    emit_u16(code, units_loop);
+
+    patch_jr(code, units_done);
+    // Add back 10 to get actual units digit
+    code.push(LD_A_C);
+    code.push(ADD_A_N);
+    code.push(10);
+    code.push(LD_E_A);           // E = units digit (0-9)
+
+    // D now contains BC / 10, need to extract tens digit
+    code.push(LD_B_N);
+    code.push(0);
+    code.push(LD_C_D);           // BC = quotient (0-999)
+    code.push(LD_D_N);
+    code.push(0);                // D = tens digit counter
+
+    // Extract tens digit: BC % 10
+    let tens_loop = code.len() as u16;
+    code.push(LD_A_C);
+    code.push(SUB_N);
+    code.push(10);
+    code.push(LD_C_A);
+    code.push(LD_A_B);
+    code.push(SBC_A_N);
+    code.push(0);
+    code.push(LD_B_A);
+    let tens_done = jr_placeholder(code, JR_C_N);
+    code.push(INC_D);
+    code.push(JP_NN);
+    emit_u16(code, tens_loop);
+
+    patch_jr(code, tens_done);
+    code.push(LD_A_C);
+    code.push(ADD_A_N);
+    code.push(10);
+    // A = tens digit, D = hundreds (0-99)
+    // Combine into packed byte: high nibble = tens, low nibble = units
+    code.push(RLA);
+    code.push(RLA);
+    code.push(RLA);
+    code.push(RLA);
+    code.push(AND_N);
+    code.push(0xF0);             // A = tens << 4
+    code.push(OR_E);             // A = (tens << 4) | units
+    code.push(POP_HL);           // HL = result + 27
+    code.push(LD_HL_A);          // Store low byte
+
+    // Now D = hundreds (0-99), need to split and store at byte 26
+    code.push(DEC_HL);           // HL = result + 26
+    code.push(LD_A_D);           // A = hundreds (0-99)
+    // Convert A to packed BCD
+    code.push(LD_B_N);
+    code.push(0);                // B = thousands digit
+    let hunds_loop = code.len() as u16;
+    code.push(SUB_N);
+    code.push(10);
+    let hunds_done = jr_placeholder(code, JR_C_N);
+    code.push(INC_B);
+    code.push(JP_NN);
+    emit_u16(code, hunds_loop);
+
+    patch_jr(code, hunds_done);
+    code.push(ADD_A_N);
+    code.push(10);               // A = hundreds digit (0-9)
+    code.push(LD_C_A);           // C = hundreds
+    code.push(LD_A_B);           // A = thousands (0-9)
+    code.push(RLA);
+    code.push(RLA);
+    code.push(RLA);
+    code.push(RLA);
+    code.push(AND_N);
+    code.push(0xF0);
+    code.push(OR_C);             // A = (thousands << 4) | hundreds
+    code.push(LD_HL_A);          // Store high byte
+
+    code.push(POP_HL);           // Return result ptr
     code.push(RET);
 }
 
@@ -1567,8 +2035,7 @@ fn emit_binary_op_handler(
     // Copy first operand to result using LDIR (53 bytes max)
     code.push(LD_BC_NN);
     emit_u16(code, MAX_NUM_SIZE as u16);
-    code.push(ED_PREFIX);
-    code.push(LDIR);     // HL (source) -> DE (dest), BC bytes
+    emit_ldir(code);     // HL (source) -> DE (dest), BC bytes
 
     // Now we have: result contains copy of first operand
     // Stack: [first, result, second]
@@ -1790,6 +2257,1765 @@ fn emit_jump_if_not_zero_handler(code: &mut Vec<u8>, pop_vstack: u16, vm_loop: u
 
     code.push(JP_NN);
     emit_u16(code, vm_loop);
+}
+
+// =====================================================
+// REPL Mode - Standalone interpreter running on Z80
+// =====================================================
+
+// REPL memory layout (different from bytecode VM)
+const REPL_INPUT_BUF: u16 = 0x8000;      // 256 bytes for input line
+const REPL_INPUT_LEN: u16 = 0x80F0;      // Current input length
+const REPL_INPUT_POS: u16 = 0x80F1;      // Current parse position
+const REPL_TOKEN_BUF: u16 = 0x8100;      // Tokenized input (64 tokens * 4 bytes)
+const REPL_TOKEN_CNT: u16 = 0x81FC;      // Token count
+const REPL_TOKEN_POS: u16 = 0x81FE;      // Current token position for parsing
+const REPL_OP_STACK: u16 = 0x8200;       // Operator stack (64 entries)
+const REPL_OP_SP: u16 = 0x82FE;          // Operator stack pointer
+const REPL_VAL_STACK: u16 = 0x8300;      // Value stack (pointers to BCD numbers)
+const REPL_VAL_SP: u16 = 0x83FE;         // Value stack pointer
+const REPL_VARS: u16 = 0x8400;           // 27 slots * 28 bytes (a-z + scale)
+const REPL_SCALE_BCD: u16 = 0x8400 + 26 * 28;  // Scale as BCD (slot 26, same format as variables)
+const REPL_TEMP: u16 = 0x8700;           // Temp BCD buffer (28 bytes)
+const REPL_TEMP2: u16 = 0x871C;          // Second temp buffer
+const REPL_SCALE: u16 = 0x8740;          // Scale setting (1 byte)
+const REPL_HEAP: u16 = 0x8800;           // Heap start
+const REPL_HEAP_PTR: u16 = 0x87FC;       // Current heap pointer
+
+// Token types for REPL
+const TOK_EOF: u8 = 0x00;
+const TOK_NUMBER: u8 = 0x01;      // Followed by 2-byte pointer to BCD
+const TOK_VARIABLE: u8 = 0x02;    // Followed by variable index (0-25)
+const TOK_SCALE: u8 = 0x03;       // Special 'scale' variable
+const TOK_PLUS: u8 = 0x10;
+const TOK_MINUS: u8 = 0x11;
+const TOK_STAR: u8 = 0x12;
+const TOK_SLASH: u8 = 0x13;
+const TOK_PERCENT: u8 = 0x14;
+const TOK_CARET: u8 = 0x15;
+const TOK_LPAREN: u8 = 0x20;
+const TOK_RPAREN: u8 = 0x21;
+const TOK_ASSIGN: u8 = 0x30;
+
+/// Generate a standalone REPL ROM that runs entirely on the Z80
+pub fn generate_repl_rom() -> Vec<u8> {
+    use opcodes::*;
+
+    let mut code = Vec::new();
+
+    // Jump to init
+    code.push(JP_NN);
+    let init_patch = code.len();
+    emit_u16(&mut code, 0);  // Will be patched
+
+    // Pad to 0x0100 to avoid any protected areas
+    while code.len() < 0x0100 {
+        code.push(NOP);
+    }
+
+    // === Subroutines ===
+
+    // ACIA output character (A = char)
+    let acia_out = code.len() as u16;
+    emit_repl_acia_out(&mut code);
+
+    // ACIA input character (returns char in A)
+    let acia_in = code.len() as u16;
+    emit_repl_acia_in(&mut code);
+
+    // Print string (HL = null-terminated string)
+    let print_str = code.len() as u16;
+    emit_repl_print_str(&mut code, acia_out);
+
+    // Print CRLF
+    let print_crlf = code.len() as u16;
+    emit_repl_print_crlf(&mut code, acia_out);
+
+    // Get line from input (fills REPL_INPUT_BUF)
+    let getline = code.len() as u16;
+    emit_repl_getline(&mut code, acia_in, acia_out);
+
+    // Allocate BCD number on heap (returns HL = pointer)
+    let alloc_num = code.len() as u16;
+    emit_repl_alloc_num(&mut code);
+
+    // Parse number from input buffer (returns HL = BCD pointer)
+    let parse_num = code.len() as u16;
+    emit_repl_parse_num(&mut code, alloc_num);
+
+    // Tokenize input buffer
+    let tokenize = code.len() as u16;
+    emit_repl_tokenize(&mut code, parse_num);
+
+    // Push value onto value stack
+    let val_push = code.len() as u16;
+    emit_repl_val_push(&mut code);
+
+    // Pop value from value stack (returns HL = pointer)
+    let val_pop = code.len() as u16;
+    emit_repl_val_pop(&mut code);
+
+    // Push operator onto operator stack
+    let op_push = code.len() as u16;
+    emit_repl_op_push(&mut code);
+
+    // Pop operator from operator stack (returns A = operator)
+    let op_pop = code.len() as u16;
+    emit_repl_op_pop(&mut code);
+
+    // Check if operator stack is empty (Z flag set if empty)
+    let op_empty = code.len() as u16;
+    emit_repl_op_empty(&mut code);
+
+    // Peek top of operator stack (returns A = operator)
+    let op_peek = code.len() as u16;
+    emit_repl_op_peek(&mut code);
+
+    // Get operator precedence (A = token, returns A = precedence)
+    let get_prec = code.len() as u16;
+    emit_repl_get_prec(&mut code);
+
+    // BCD arithmetic routines
+    let bcd_add = code.len() as u16;
+    emit_bcd_add_routine(&mut code);
+
+    let bcd_sub = code.len() as u16;
+    emit_bcd_sub_routine(&mut code);
+
+    let bcd_mul = code.len() as u16;
+    emit_bcd_mul_routine(&mut code, bcd_add);
+
+    let bcd_div = code.len() as u16;
+    emit_bcd_div_routine(&mut code, bcd_sub);
+
+    // Multiply BCD by 10 (shift digits left)
+    let bcd_mul10 = code.len() as u16;
+    emit_bcd_mul10_routine(&mut code);
+
+    // Copy BCD number (HL = dest, DE = source) - use REPL 28-byte version
+    let bcd_copy = code.len() as u16;
+    emit_repl_copy_number(&mut code);
+
+    // Convert byte at REPL_SCALE to BCD at REPL_SCALE_BCD
+    let byte_to_scale_bcd = code.len() as u16;
+    emit_byte_to_scale_bcd(&mut code);
+
+    // Convert BCD at REPL_SCALE_BCD back to byte and store at REPL_SCALE
+    let scale_bcd_to_byte = code.len() as u16;
+    emit_scale_bcd_to_byte(&mut code);
+
+    // Apply binary operator (A = op, pops 2 vals, pushes result)
+    let apply_op = code.len() as u16;
+    emit_repl_apply_op(&mut code, val_pop, val_push, alloc_num, bcd_add, bcd_sub, bcd_mul, bcd_div, bcd_mul10, bcd_copy, scale_bcd_to_byte);
+
+    // Evaluate expression from token buffer
+    let evaluate = code.len() as u16;
+    emit_repl_evaluate(&mut code, val_push, val_pop, op_push, op_pop, op_empty, op_peek, get_prec, apply_op, byte_to_scale_bcd, alloc_num, bcd_copy);
+
+    // Print BCD number (use the working VM version)
+    let print_num = code.len() as u16;
+    emit_print_bcd_number(&mut code, acia_out);
+
+    // === Initialization ===
+    let init_addr = code.len() as u16;
+    // Patch the initial jump
+    code[init_patch] = (init_addr & 0xFF) as u8;
+    code[init_patch + 1] = (init_addr >> 8) as u8;
+
+    emit_repl_init(&mut code);
+
+    // === Main REPL loop ===
+    let repl_loop = code.len() as u16;
+    emit_repl_main_loop(&mut code, print_str, print_crlf, getline, tokenize, evaluate, val_pop, print_num, repl_loop);
+
+    // === String constants ===
+    let banner_str = code.len() as u16;
+    for b in b"bc80 REPL v1.0\r\n" {
+        code.push(*b);
+    }
+    code.push(0);
+
+    let prompt_str = code.len() as u16;
+    for b in b"> " {
+        code.push(*b);
+    }
+    code.push(0);
+
+    let error_str = code.len() as u16;
+    for b in b"Error\r\n" {
+        code.push(*b);
+    }
+    code.push(0);
+
+    // Patch string addresses in init
+    patch_repl_strings(&mut code, init_addr, banner_str, prompt_str, error_str, print_str, repl_loop);
+
+    eprintln!("REPL code size: {} bytes", code.len());
+
+    code
+}
+
+fn emit_repl_acia_out(code: &mut Vec<u8>) {
+    use opcodes::*;
+    // Wait for TX ready, then output A
+    code.push(PUSH_AF);
+    let wait_loop = code.len() as u16;
+    code.push(IN_A_N);
+    code.push(ACIA_STATUS_PORT);
+    code.push(AND_N);
+    code.push(ACIA_TX_READY);
+    code.push(JR_Z_N);
+    let offset = (wait_loop as i16 - code.len() as i16 - 1) as i8;
+    code.push(offset as u8);
+    code.push(POP_AF);
+    code.push(OUT_N_A);
+    code.push(ACIA_DATA_PORT);
+    code.push(RET);
+}
+
+fn emit_repl_acia_in(code: &mut Vec<u8>) {
+    use opcodes::*;
+    // Wait for RX ready, then read to A
+    let wait_loop = code.len() as u16;
+    code.push(IN_A_N);
+    code.push(ACIA_STATUS_PORT);
+    code.push(AND_N);
+    code.push(ACIA_RX_READY);
+    code.push(JR_Z_N);
+    let offset = (wait_loop as i16 - code.len() as i16 - 1) as i8;
+    code.push(offset as u8);
+    code.push(IN_A_N);
+    code.push(ACIA_DATA_PORT);
+    code.push(RET);
+}
+
+fn emit_repl_print_str(code: &mut Vec<u8>, acia_out: u16) {
+    use opcodes::*;
+    // HL = string pointer, print until null
+    let loop_start = code.len() as u16;
+    code.push(LD_A_HL);
+    code.push(OR_A);
+    code.push(RET_Z);
+    code.push(CALL_NN);
+    emit_u16(code, acia_out);
+    code.push(INC_HL);
+    code.push(JR_N);
+    let offset = (loop_start as i16 - code.len() as i16 - 1) as i8;
+    code.push(offset as u8);
+}
+
+fn emit_repl_print_crlf(code: &mut Vec<u8>, acia_out: u16) {
+    use opcodes::*;
+    code.push(LD_A_N);
+    code.push(0x0D);  // CR
+    code.push(CALL_NN);
+    emit_u16(code, acia_out);
+    code.push(LD_A_N);
+    code.push(0x0A);  // LF
+    code.push(CALL_NN);
+    emit_u16(code, acia_out);
+    code.push(RET);
+}
+
+fn emit_repl_getline(code: &mut Vec<u8>, acia_in: u16, acia_out: u16) {
+    use opcodes::*;
+    // Read line into REPL_INPUT_BUF, handle backspace
+    code.push(LD_HL_NN);
+    emit_u16(code, REPL_INPUT_BUF);
+    code.push(LD_B_N);
+    code.push(0);  // Character count
+
+    let loop_start = code.len() as u16;
+    code.push(CALL_NN);
+    emit_u16(code, acia_in);
+
+    // Check for CR
+    code.push(CP_N);
+    code.push(13);
+    let done = jr_placeholder(code, JR_Z_N);
+
+    // Check for LF
+    code.push(CP_N);
+    code.push(10);
+    let done2 = jr_placeholder(code, JR_Z_N);
+
+    // Check for backspace
+    code.push(CP_N);
+    code.push(8);
+    let not_bs = jr_placeholder(code, JR_NZ_N);
+
+    // Handle backspace
+    code.push(LD_A_B);
+    code.push(OR_A);
+    let no_del = jr_placeholder(code, JR_Z_N);  // Nothing to delete
+    code.push(DEC_B);
+    code.push(DEC_HL);
+    // Echo: BS, space, BS
+    code.push(LD_A_N);
+    code.push(8);
+    code.push(CALL_NN);
+    emit_u16(code, acia_out);
+    code.push(LD_A_N);
+    code.push(b' ');
+    code.push(CALL_NN);
+    emit_u16(code, acia_out);
+    code.push(LD_A_N);
+    code.push(8);
+    code.push(CALL_NN);
+    emit_u16(code, acia_out);
+    patch_jr(code, no_del);
+    code.push(JR_N);
+    let back_to_loop = (loop_start as i16 - code.len() as i16 - 1) as i8;
+    code.push(back_to_loop as u8);
+
+    patch_jr(code, not_bs);
+    // Check buffer full
+    code.push(LD_C_A);  // Save char
+    code.push(LD_A_B);
+    code.push(CP_N);
+    code.push(250);
+    let not_full = jr_placeholder(code, JR_C_N);
+    code.push(JR_N);
+    let back_to_loop2 = (loop_start as i16 - code.len() as i16 - 1) as i8;
+    code.push(back_to_loop2 as u8);
+
+    patch_jr(code, not_full);
+    // Store character and echo
+    code.push(LD_A_C);
+    code.push(LD_HL_A);
+    code.push(INC_HL);
+    code.push(INC_B);
+    code.push(CALL_NN);
+    emit_u16(code, acia_out);
+    code.push(JR_N);
+    let back_to_loop3 = (loop_start as i16 - code.len() as i16 - 1) as i8;
+    code.push(back_to_loop3 as u8);
+
+    // Done - null terminate
+    patch_jr(code, done);
+    patch_jr(code, done2);
+    code.push(XOR_A);
+    code.push(LD_HL_A);  // Null terminate
+    code.push(LD_A_B);
+    code.push(LD_NN_A);
+    emit_u16(code, REPL_INPUT_LEN);
+    code.push(XOR_A);
+    code.push(LD_NN_A);
+    emit_u16(code, REPL_INPUT_POS);
+    code.push(RET);
+}
+
+fn emit_repl_alloc_num(code: &mut Vec<u8>) {
+    use opcodes::*;
+    // Allocate 28 bytes on heap, return pointer in HL
+    code.push(LD_HL_NN_IND);
+    emit_u16(code, REPL_HEAP_PTR);
+    code.push(PUSH_HL);  // Save current pointer (return value)
+
+    // Add 28 to heap pointer
+    code.push(LD_DE_NN);
+    emit_u16(code, 28);
+    code.push(ADD_HL_DE);
+    code.push(LD_NN_HL);
+    emit_u16(code, REPL_HEAP_PTR);
+
+    code.push(POP_HL);  // Return allocated pointer
+    code.push(RET);
+}
+
+fn emit_repl_copy_number(code: &mut Vec<u8>) {
+    use opcodes::*;
+    // Copy 28-byte REPL BCD number from DE to HL
+    // Format: [sign:1][len:1][scale:1][25 packed bytes] = 28 bytes
+
+    code.push(PUSH_HL);
+    code.push(PUSH_DE);
+
+    // Use LDIR to copy 28 bytes
+    code.push(LD_BC_NN);
+    emit_u16(code, 28);
+    code.push(EX_DE_HL);  // HL = source, DE = dest
+    emit_ldir(code);
+
+    code.push(POP_DE);
+    code.push(POP_HL);
+    code.push(RET);
+}
+
+/// Convert byte at REPL_SCALE to BCD number at REPL_SCALE_BCD
+/// Value 0-255 becomes up to 3 decimal digits
+/// Uses fixed len=50 format with right-aligned digits (same as parsed numbers)
+fn emit_byte_to_scale_bcd(code: &mut Vec<u8>) {
+    use opcodes::*;
+    // Read the byte
+    code.push(LD_A_NN_IND);
+    emit_u16(code, REPL_SCALE);
+    // A = scale value (0-255)
+
+    code.push(LD_HL_NN);
+    emit_u16(code, REPL_SCALE_BCD);
+
+    // Initialize BCD structure: sign=0, len=50, scale=0
+    code.push(PUSH_AF);           // Save value
+    code.push(XOR_A);
+    code.push(LD_HL_A);           // sign = 0
+    code.push(INC_HL);
+    code.push(LD_A_N);
+    code.push(50);                // len = 50 (fixed format)
+    code.push(LD_HL_A);
+    code.push(INC_HL);
+    code.push(XOR_A);
+    code.push(LD_HL_A);           // scale = 0
+    code.push(INC_HL);
+
+    // Zero out the packed digit area (25 bytes)
+    code.push(LD_B_N);
+    code.push(25);
+    let zero_loop = code.len() as u16;
+    code.push(XOR_A);
+    code.push(LD_HL_A);
+    code.push(INC_HL);
+    code.push(DJNZ_N);
+    let back = (zero_loop as i16 - code.len() as i16 - 1) as i8;
+    code.push(back as u8);
+
+    code.push(POP_AF);            // Restore value
+
+    // Convert byte to decimal digits: A = value (0-255)
+    // D = hundreds, E = tens, result in A = ones
+    code.push(LD_D_N);
+    code.push(0);                 // D = hundreds (initial)
+    code.push(LD_E_N);
+    code.push(0);                 // E = tens
+
+    // Count hundreds
+    let hundreds_loop = code.len() as u16;
+    code.push(CP_N);
+    code.push(100);
+    let no_more_hundreds = jr_placeholder(code, JR_C_N);
+    code.push(SUB_N);
+    code.push(100);
+    code.push(INC_D);
+    code.push(JR_N);
+    let back_h = (hundreds_loop as i16 - code.len() as i16 - 1) as i8;
+    code.push(back_h as u8);
+
+    patch_jr(code, no_more_hundreds);
+
+    // Count tens
+    let tens_loop = code.len() as u16;
+    code.push(CP_N);
+    code.push(10);
+    let no_more_tens = jr_placeholder(code, JR_C_N);
+    code.push(SUB_N);
+    code.push(10);
+    code.push(INC_E);
+    code.push(JR_N);
+    let back_t = (tens_loop as i16 - code.len() as i16 - 1) as i8;
+    code.push(back_t as u8);
+
+    patch_jr(code, no_more_tens);
+
+    // A = ones, D = hundreds, E = tens
+    code.push(LD_C_A);            // C = ones
+
+    // Store digits right-aligned at bytes 26-27 (last 2 packed bytes)
+    // Byte 26 = (hundreds << 4) | tens (positions 49-48)
+    // Byte 27 = ones << 4          (position 50, rightmost)
+    // Actually for single digit values (0-9), only byte 27 low nibble is used
+    // But we'll pack all 3 for values up to 255
+
+    code.push(LD_HL_NN);
+    emit_u16(code, REPL_SCALE_BCD + 3 + 24);  // byte 27 (offset 3 + 24 = 27)
+
+    // Byte 27: ones in LOW nibble (rightmost position)
+    code.push(LD_A_C);            // ones
+    code.push(LD_HL_A);           // store ones in low nibble
+
+    // Check if we have tens or hundreds
+    code.push(LD_A_D);
+    code.push(OR_E);
+    code.push(RET_Z);             // Only ones, we're done
+
+    // Byte 27: add tens to high nibble
+    code.push(LD_A_E);            // tens
+    code.push(ADD_A_A);           // * 2
+    code.push(ADD_A_A);           // * 4
+    code.push(ADD_A_A);           // * 8
+    code.push(ADD_A_A);           // * 16 = shift left 4
+    code.push(OR_C);              // combine with ones (C still has ones)
+    code.push(LD_HL_A);
+
+    // Check if we have hundreds
+    code.push(LD_A_D);
+    code.push(OR_A);
+    code.push(RET_Z);             // No hundreds, we're done
+
+    // Byte 26: hundreds in LOW nibble
+    code.push(DEC_HL);            // point to byte 26
+    code.push(LD_A_D);            // hundreds
+    code.push(LD_HL_A);           // store hundreds in low nibble
+
+    code.push(RET);
+}
+
+/// Convert BCD number at REPL_SCALE_BCD back to byte and store at REPL_SCALE
+/// Reads from right-aligned format (len=50, digits in last bytes)
+fn emit_scale_bcd_to_byte(code: &mut Vec<u8>) {
+    use opcodes::*;
+    // Read from the last 2 packed bytes (bytes 26-27)
+    // which contain the rightmost digits
+
+    code.push(LD_HL_NN);
+    emit_u16(code, REPL_SCALE_BCD + 3 + 24);  // byte 27
+
+    // Byte 27: low nibble = ones, high nibble = tens
+    code.push(LD_A_HL);
+    code.push(LD_B_A);            // B = packed (tens|ones)
+    code.push(AND_N);
+    code.push(0x0F);              // A = ones
+    code.push(LD_C_A);            // C = ones
+
+    code.push(LD_A_B);
+    code.push(RRCA);              // Rotate right 4 times
+    code.push(RRCA);
+    code.push(RRCA);
+    code.push(RRCA);
+    code.push(AND_N);
+    code.push(0x0F);              // A = tens
+    code.push(LD_E_A);            // E = tens
+
+    // Byte 26: low nibble = hundreds
+    code.push(DEC_HL);
+    code.push(LD_A_HL);
+    code.push(AND_N);
+    code.push(0x0F);              // A = hundreds
+    code.push(LD_D_A);            // D = hundreds
+
+    // Calculate value = hundreds*100 + tens*10 + ones
+    // Start with ones
+    code.push(LD_A_C);
+    code.push(LD_L_A);
+    code.push(LD_H_N);
+    code.push(0);                 // HL = ones
+
+    // Add tens * 10
+    code.push(LD_A_E);            // A = tens
+    code.push(OR_A);              // Check if tens = 0
+    let skip_tens = jr_placeholder(code, JR_Z_N);
+    code.push(LD_B_A);            // B = tens count
+    let add_tens_loop = code.len() as u16;
+    code.push(LD_DE_NN);
+    emit_u16(code, 10);
+    code.push(ADD_HL_DE);
+    code.push(DJNZ_N);
+    let back_tens = (add_tens_loop as i16 - code.len() as i16 - 1) as i8;
+    code.push(back_tens as u8);
+
+    patch_jr(code, skip_tens);
+
+    // Add hundreds * 100
+    code.push(LD_A_NN_IND);
+    emit_u16(code, REPL_SCALE_BCD + 3 + 23);  // byte 26, reload D
+    code.push(AND_N);
+    code.push(0x0F);
+    code.push(OR_A);
+    let skip_hundreds = jr_placeholder(code, JR_Z_N);
+    code.push(LD_B_A);            // B = hundreds count
+    let add_hundreds_loop = code.len() as u16;
+    code.push(LD_DE_NN);
+    emit_u16(code, 100);
+    code.push(ADD_HL_DE);
+    code.push(DJNZ_N);
+    let back_hundreds = (add_hundreds_loop as i16 - code.len() as i16 - 1) as i8;
+    code.push(back_hundreds as u8);
+
+    patch_jr(code, skip_hundreds);
+
+    // L = low byte of result (we assume scale <= 255)
+    code.push(LD_A_L);
+    code.push(LD_NN_A);
+    emit_u16(code, REPL_SCALE);
+
+    code.push(RET);
+}
+
+fn emit_repl_parse_num(code: &mut Vec<u8>, alloc_num: u16) {
+    use opcodes::*;
+    // Parse number from input at REPL_INPUT_POS
+    // Returns HL = pointer to BCD number in fixed 50-digit packed format
+    // Format: [sign][len=50][scale][25 packed bytes]
+    // Numbers are right-aligned: single digit goes in low nibble of byte 27
+
+    // Allocate space (28 bytes)
+    code.push(CALL_NN);
+    emit_u16(code, alloc_num);
+    code.push(PUSH_HL);  // Save BCD pointer [stack: bcd]
+
+    // Initialize header: sign=0, len=50, scale=0
+    code.push(XOR_A);
+    code.push(LD_HL_A);  // sign = 0
+    code.push(INC_HL);
+    code.push(LD_A_N);
+    code.push(50);       // Fixed 50 digits
+    code.push(LD_HL_A);  // len = 50
+    code.push(INC_HL);
+    code.push(XOR_A);
+    code.push(LD_HL_A);  // scale = 0
+    code.push(INC_HL);
+
+    // Zero out all 25 packed bytes
+    code.push(LD_B_N);
+    code.push(25);
+    let zero_loop = code.len() as u16;
+    code.push(LD_HL_A);  // Store 0
+    code.push(INC_HL);
+    code.push(DJNZ_N);
+    let offset = (zero_loop as i16 - code.len() as i16 - 1) as i8;
+    code.push(offset as u8);
+
+    // Get input position, HL = input pointer
+    code.push(LD_A_NN_IND);
+    emit_u16(code, REPL_INPUT_POS);
+    code.push(LD_E_A);
+    code.push(LD_D_N);
+    code.push(0);
+    code.push(LD_HL_NN);
+    emit_u16(code, REPL_INPUT_BUF);
+    code.push(ADD_HL_DE);
+
+    // Count digits and find end position
+    code.push(LD_B_N);
+    code.push(0);  // B = digit count
+
+    let count_loop = code.len() as u16;
+    code.push(LD_A_HL);
+    code.push(SUB_N);
+    code.push(b'0');
+    let count_done = jr_placeholder(code, JR_C_N);
+    code.push(CP_N);
+    code.push(10);
+    let count_done2 = jr_placeholder(code, JR_NC_N);
+    code.push(INC_B);
+    code.push(INC_HL);
+    code.push(JR_N);
+    let back = (count_loop as i16 - code.len() as i16 - 1) as i8;
+    code.push(back as u8);
+
+    patch_jr(code, count_done);
+    patch_jr(code, count_done2);
+    // HL = one past last digit, B = digit count
+
+    // Update input position
+    code.push(PUSH_HL);
+    code.push(LD_DE_NN);
+    emit_u16(code, REPL_INPUT_BUF);
+    code.push(OR_A);
+    emit_sbc_hl_de(code);
+    code.push(LD_A_L);
+    code.push(LD_NN_A);
+    emit_u16(code, REPL_INPUT_POS);
+    code.push(POP_HL);  // HL = one past last digit
+
+    // If no digits, return zero
+    code.push(LD_A_B);
+    code.push(OR_A);
+    let has_digits = jr_placeholder(code, JR_NZ_N);
+    code.push(POP_HL);  // Return BCD pointer
+    code.push(RET);
+
+    patch_jr(code, has_digits);
+
+    // Get BCD pointer, calculate position for last packed byte (offset 27)
+    code.push(POP_DE);   // DE = BCD pointer [stack: empty]
+    code.push(PUSH_DE);  // Save for return [stack: bcd]
+    code.push(LD_A_N);
+    code.push(27);
+    code.push(ADD_A_E);
+    code.push(LD_E_A);
+    let no_carry = jr_placeholder(code, JR_NC_N);
+    code.push(INC_D);
+    patch_jr(code, no_carry);
+    // DE = pointer to last packed byte (byte 27 = digits 49-50)
+
+    // HL = one past last digit, B = count, go back to last digit
+    code.push(DEC_HL);
+
+    // Save original count's parity to temp location
+    // Position = (original_count - B), if even -> low nibble, if odd -> high nibble
+    // (original_count XOR B) has same parity as (original_count - B)
+    code.push(LD_A_B);
+    code.push(AND_N);
+    code.push(1);
+    code.push(LD_NN_A);
+    emit_u16(code, REPL_TEMP);  // Save parity of original count
+
+    // Pack digits from right to left
+    let pack_loop = code.len() as u16;
+    code.push(LD_A_HL);
+    code.push(SUB_N);
+    code.push(b'0');
+    code.push(LD_C_A);   // C = digit (0-9)
+
+    // Check position parity: (original_parity XOR B) & 1
+    // If 0 -> low nibble (even position from right)
+    // If 1 -> high nibble (odd position from right)
+    code.push(LD_A_NN_IND);
+    emit_u16(code, REPL_TEMP);
+    code.push(XOR_B);
+    code.push(AND_N);
+    code.push(1);
+    let is_high_nibble = jr_placeholder(code, JR_NZ_N);
+
+    // Even count remaining: store in LOW nibble (rightmost digit position)
+    code.push(LD_A_DE);
+    code.push(AND_N);
+    code.push(0xF0);     // Keep high nibble
+    code.push(OR_C);     // Add low nibble
+    code.push(LD_DE_A);
+    let done_digit = jr_placeholder(code, JR_N);
+
+    patch_jr(code, is_high_nibble);
+    // Odd count remaining: store in HIGH nibble
+    code.push(LD_A_C);
+    code.push(RLA);
+    code.push(RLA);
+    code.push(RLA);
+    code.push(RLA);
+    code.push(LD_C_A);
+    code.push(LD_A_DE);
+    code.push(AND_N);
+    code.push(0x0F);     // Keep low nibble
+    code.push(OR_C);     // Add high nibble
+    code.push(LD_DE_A);
+    code.push(DEC_DE);   // Move to previous packed byte
+
+    patch_jr(code, done_digit);
+    code.push(DEC_B);
+    let pack_done = jr_placeholder(code, JR_Z_N);
+    code.push(DEC_HL);
+    code.push(JR_N);
+    let back2 = (pack_loop as i16 - code.len() as i16 - 1) as i8;
+    code.push(back2 as u8);
+
+    patch_jr(code, pack_done);
+    code.push(POP_HL);   // Return BCD pointer
+    code.push(RET);
+}
+
+fn emit_repl_tokenize(code: &mut Vec<u8>, parse_num: u16) {
+    use opcodes::*;
+    // Tokenize REPL_INPUT_BUF into REPL_TOKEN_BUF
+
+    // Reset token count
+    code.push(XOR_A);
+    code.push(LD_NN_A);
+    emit_u16(code, REPL_TOKEN_CNT);
+    code.push(LD_NN_A);
+    emit_u16(code, REPL_INPUT_POS);
+
+    code.push(LD_HL_NN);
+    emit_u16(code, REPL_INPUT_BUF);
+    code.push(LD_DE_NN);
+    emit_u16(code, REPL_TOKEN_BUF);
+
+    let tok_loop = code.len() as u16;
+    code.push(LD_A_HL);
+    code.push(OR_A);
+    let tok_done = jp_z_placeholder(code);  // Use JP Z for long jump
+
+    // Skip whitespace
+    code.push(CP_N);
+    code.push(b' ');
+    let not_space = jr_placeholder(code, JR_NZ_N);
+    code.push(INC_HL);
+    // Update input pos
+    code.push(LD_A_NN_IND);
+    emit_u16(code, REPL_INPUT_POS);
+    code.push(INC_A);
+    code.push(LD_NN_A);
+    emit_u16(code, REPL_INPUT_POS);
+    code.push(JR_N);
+    let back = (tok_loop as i16 - code.len() as i16 - 1) as i8;
+    code.push(back as u8);
+
+    patch_jr(code, not_space);
+
+    // Check for digit
+    code.push(LD_A_HL);
+    code.push(SUB_N);
+    code.push(b'0');
+    let not_digit = jr_placeholder(code, JR_C_N);
+    code.push(CP_N);
+    code.push(10);
+    let is_digit = jr_placeholder(code, JR_C_N);
+
+    patch_jr(code, not_digit);
+    // Check for decimal point starting a number
+    code.push(LD_A_HL);
+    code.push(CP_N);
+    code.push(b'.');
+    let not_num = jr_placeholder(code, JR_NZ_N);
+
+    patch_jr(code, is_digit);
+    // Parse number
+    code.push(PUSH_HL);
+    code.push(PUSH_DE);
+    // Calculate input pos from HL
+    code.push(LD_DE_NN);
+    emit_u16(code, REPL_INPUT_BUF);
+    code.push(OR_A);
+    emit_sbc_hl_de(code);
+    code.push(LD_A_L);
+    code.push(LD_NN_A);
+    emit_u16(code, REPL_INPUT_POS);
+    code.push(CALL_NN);
+    emit_u16(code, parse_num);  // Returns HL = BCD pointer
+    code.push(LD_B_H);
+    code.push(LD_C_L);  // BC = BCD pointer
+    code.push(POP_DE);
+    // Store token
+    code.push(LD_A_N);
+    code.push(TOK_NUMBER);
+    code.push(LD_DE_A);
+    code.push(INC_DE);
+    code.push(LD_A_C);
+    code.push(LD_DE_A);
+    code.push(INC_DE);
+    code.push(LD_A_B);
+    code.push(LD_DE_A);
+    code.push(INC_DE);
+    code.push(XOR_A);
+    code.push(LD_DE_A);
+    code.push(INC_DE);
+    // Increment token count
+    code.push(LD_A_NN_IND);
+    emit_u16(code, REPL_TOKEN_CNT);
+    code.push(INC_A);
+    code.push(LD_NN_A);
+    emit_u16(code, REPL_TOKEN_CNT);
+    // Update HL from input pos
+    code.push(LD_A_NN_IND);
+    emit_u16(code, REPL_INPUT_POS);
+    code.push(LD_L_A);
+    code.push(LD_H_N);
+    code.push(0);
+    code.push(LD_BC_NN);
+    emit_u16(code, REPL_INPUT_BUF);
+    code.push(ADD_HL_BC);
+    code.push(POP_AF);  // Discard old HL
+    code.push(JR_N);
+    let back2 = (tok_loop as i16 - code.len() as i16 - 1) as i8;
+    code.push(back2 as u8);
+
+    patch_jr(code, not_num);
+    // Check for operators
+    // NOTE: Use JP Z instead of JR Z because distance to store_op can exceed 127 bytes
+    code.push(LD_A_HL);
+    code.push(LD_B_N);
+    code.push(TOK_PLUS);
+    code.push(CP_N);
+    code.push(b'+');
+    let store_op = jp_z_placeholder(code);
+    code.push(LD_B_N);
+    code.push(TOK_MINUS);
+    code.push(CP_N);
+    code.push(b'-');
+    let store_op2 = jp_z_placeholder(code);
+    code.push(LD_B_N);
+    code.push(TOK_STAR);
+    code.push(CP_N);
+    code.push(b'*');
+    let store_op3 = jp_z_placeholder(code);
+    code.push(LD_B_N);
+    code.push(TOK_SLASH);
+    code.push(CP_N);
+    code.push(b'/');
+    let store_op4 = jp_z_placeholder(code);
+    code.push(LD_B_N);
+    code.push(TOK_LPAREN);
+    code.push(CP_N);
+    code.push(b'(');
+    let store_op5 = jp_z_placeholder(code);
+    code.push(LD_B_N);
+    code.push(TOK_RPAREN);
+    code.push(CP_N);
+    code.push(b')');
+    let store_op6 = jp_z_placeholder(code);
+    // Check for '=' (assignment)
+    code.push(LD_B_N);
+    code.push(TOK_ASSIGN);
+    code.push(CP_N);
+    code.push(b'=');
+    let store_op7 = jp_z_placeholder(code);
+
+    // Check for variable (a-z)
+    code.push(LD_A_HL);
+    code.push(SUB_N);
+    code.push(b'a');
+    let not_var = jr_placeholder(code, JR_C_N);  // char < 'a'
+    code.push(CP_N);
+    code.push(26);  // Check if < 26 (i.e., <= 'z')
+    let is_var = jr_placeholder(code, JR_C_N);
+
+    patch_jr(code, not_var);
+    // Unknown character - skip it
+    code.push(INC_HL);
+    // Use JP instead of JR - too far for relative jump
+    code.push(JP_NN);
+    emit_u16(code, tok_loop);
+
+    // Store variable token
+    patch_jr(code, is_var);
+    // A = (char - 'a') = variable index (0-25)
+    // But first check if this is "scale" keyword
+    code.push(CP_N);
+    code.push(b's' - b'a');      // Is it 's'?
+    let not_scale = jr_placeholder(code, JR_NZ_N);
+
+    // Check for "scale" - compare next 4 chars with "cale"
+    code.push(PUSH_HL);          // Save current position
+    code.push(INC_HL);
+    code.push(LD_A_HL);
+    code.push(CP_N);
+    code.push(b'c');
+    let not_scale2 = jr_placeholder(code, JR_NZ_N);
+    code.push(INC_HL);
+    code.push(LD_A_HL);
+    code.push(CP_N);
+    code.push(b'a');
+    let not_scale3 = jr_placeholder(code, JR_NZ_N);
+    code.push(INC_HL);
+    code.push(LD_A_HL);
+    code.push(CP_N);
+    code.push(b'l');
+    let not_scale4 = jr_placeholder(code, JR_NZ_N);
+    code.push(INC_HL);
+    code.push(LD_A_HL);
+    code.push(CP_N);
+    code.push(b'e');
+    let not_scale5 = jr_placeholder(code, JR_NZ_N);
+
+    // It's "scale"! Store as TOK_VARIABLE with index 26
+    code.push(POP_AF);           // Discard saved HL
+    // HL is at 'e', will be incremented at the end like regular variables
+    code.push(LD_A_N);
+    code.push(TOK_VARIABLE);     // Treat scale like a variable
+    code.push(LD_DE_A);
+    code.push(INC_DE);
+    code.push(LD_A_N);
+    code.push(26);               // Scale uses variable slot 26
+    code.push(LD_DE_A);
+    code.push(INC_DE);
+    code.push(XOR_A);
+    code.push(LD_DE_A);
+    code.push(INC_DE);
+    code.push(LD_DE_A);
+    code.push(INC_DE);
+    // Increment token count
+    code.push(LD_A_NN_IND);
+    emit_u16(code, REPL_TOKEN_CNT);
+    code.push(INC_A);
+    code.push(LD_NN_A);
+    emit_u16(code, REPL_TOKEN_CNT);
+    code.push(INC_HL);           // Move past last char
+    code.push(JP_NN);
+    emit_u16(code, tok_loop);
+
+    // Not "scale", restore and treat as variable 's'
+    patch_jr(code, not_scale2);
+    patch_jr(code, not_scale3);
+    patch_jr(code, not_scale4);
+    patch_jr(code, not_scale5);
+    code.push(POP_HL);           // Restore position
+
+    patch_jr(code, not_scale);
+    // A is already variable index from earlier (char - 'a')
+    // But we clobbered it checking for 'scale', reload
+    code.push(LD_A_HL);
+    code.push(SUB_N);
+    code.push(b'a');
+
+    code.push(LD_C_A);  // C = variable index
+    code.push(LD_A_N);
+    code.push(TOK_VARIABLE);
+    code.push(LD_DE_A);
+    code.push(INC_DE);
+    code.push(LD_A_C);  // A = index
+    code.push(LD_DE_A);
+    code.push(INC_DE);
+    code.push(XOR_A);
+    code.push(LD_DE_A);
+    code.push(INC_DE);
+    code.push(LD_DE_A);
+    code.push(INC_DE);
+    // Increment token count
+    code.push(LD_A_NN_IND);
+    emit_u16(code, REPL_TOKEN_CNT);
+    code.push(INC_A);
+    code.push(LD_NN_A);
+    emit_u16(code, REPL_TOKEN_CNT);
+    code.push(INC_HL);
+    code.push(JP_NN);
+    emit_u16(code, tok_loop);
+
+    // Store single-char operator
+    patch_jp(code, store_op);
+    patch_jp(code, store_op2);
+    patch_jp(code, store_op3);
+    patch_jp(code, store_op4);
+    patch_jp(code, store_op5);
+    patch_jp(code, store_op6);
+    patch_jp(code, store_op7);
+    code.push(LD_A_B);
+    code.push(LD_DE_A);
+    code.push(INC_DE);
+    code.push(XOR_A);
+    code.push(LD_DE_A);
+    code.push(INC_DE);
+    code.push(LD_DE_A);
+    code.push(INC_DE);
+    code.push(LD_DE_A);
+    code.push(INC_DE);
+    // Increment token count
+    code.push(LD_A_NN_IND);
+    emit_u16(code, REPL_TOKEN_CNT);
+    code.push(INC_A);
+    code.push(LD_NN_A);
+    emit_u16(code, REPL_TOKEN_CNT);
+    code.push(INC_HL);
+    // Use JP instead of JR - too far for relative jump
+    code.push(JP_NN);
+    emit_u16(code, tok_loop);
+
+    // Done
+    patch_jp(code, tok_done);  // Patch the long JP Z jump
+    // Store EOF token
+    code.push(LD_A_N);
+    code.push(TOK_EOF);
+    code.push(LD_DE_A);
+    code.push(RET);
+}
+
+fn emit_repl_val_push(code: &mut Vec<u8>) {
+    use opcodes::*;
+    // Push HL onto value stack
+    code.push(PUSH_HL);
+    code.push(LD_HL_NN_IND);
+    emit_u16(code, REPL_VAL_SP);
+    code.push(POP_DE);
+    code.push(LD_HL_E);
+    code.push(INC_HL);
+    code.push(LD_HL_D);
+    code.push(INC_HL);
+    code.push(LD_NN_HL);
+    emit_u16(code, REPL_VAL_SP);
+    code.push(RET);
+}
+
+fn emit_repl_val_pop(code: &mut Vec<u8>) {
+    use opcodes::*;
+    // Pop value from stack, return in HL
+    code.push(LD_HL_NN_IND);
+    emit_u16(code, REPL_VAL_SP);
+    code.push(DEC_HL);
+    code.push(LD_D_HL);
+    code.push(DEC_HL);
+    code.push(LD_E_HL);
+    code.push(LD_NN_HL);
+    emit_u16(code, REPL_VAL_SP);
+    code.push(EX_DE_HL);
+    code.push(RET);
+}
+
+fn emit_repl_op_push(code: &mut Vec<u8>) {
+    use opcodes::*;
+    // Push A onto operator stack
+    code.push(LD_HL_NN_IND);
+    emit_u16(code, REPL_OP_SP);
+    code.push(LD_HL_A);
+    code.push(INC_HL);
+    code.push(LD_NN_HL);
+    emit_u16(code, REPL_OP_SP);
+    code.push(RET);
+}
+
+fn emit_repl_op_pop(code: &mut Vec<u8>) {
+    use opcodes::*;
+    // Pop from operator stack, return in A
+    code.push(LD_HL_NN_IND);
+    emit_u16(code, REPL_OP_SP);
+    code.push(DEC_HL);
+    code.push(LD_A_HL);
+    code.push(LD_NN_HL);
+    emit_u16(code, REPL_OP_SP);
+    code.push(RET);
+}
+
+fn emit_repl_op_empty(code: &mut Vec<u8>) {
+    use opcodes::*;
+    // Check if operator stack is empty (Z set if empty)
+    code.push(LD_HL_NN_IND);
+    emit_u16(code, REPL_OP_SP);
+    code.push(LD_DE_NN);
+    emit_u16(code, REPL_OP_STACK);
+    code.push(OR_A);
+    emit_sbc_hl_de(code);
+    code.push(LD_A_L);
+    code.push(OR_H);
+    code.push(RET);
+}
+
+fn emit_repl_op_peek(code: &mut Vec<u8>) {
+    use opcodes::*;
+    // Peek top of operator stack, return in A
+    code.push(LD_HL_NN_IND);
+    emit_u16(code, REPL_OP_SP);
+    code.push(DEC_HL);
+    code.push(LD_A_HL);
+    code.push(RET);
+}
+
+fn emit_repl_get_prec(code: &mut Vec<u8>) {
+    use opcodes::*;
+    // Get precedence for operator in A, return in A
+    // +/- = 1, */ = 2, ( = 0
+    code.push(CP_N);
+    code.push(TOK_PLUS);
+    let not_plus = jr_placeholder(code, JR_NZ_N);
+    code.push(LD_A_N);
+    code.push(1);
+    code.push(RET);
+
+    patch_jr(code, not_plus);
+    code.push(CP_N);
+    code.push(TOK_MINUS);
+    let not_minus = jr_placeholder(code, JR_NZ_N);
+    code.push(LD_A_N);
+    code.push(1);
+    code.push(RET);
+
+    patch_jr(code, not_minus);
+    code.push(CP_N);
+    code.push(TOK_STAR);
+    let not_star = jr_placeholder(code, JR_NZ_N);
+    code.push(LD_A_N);
+    code.push(2);
+    code.push(RET);
+
+    patch_jr(code, not_star);
+    code.push(CP_N);
+    code.push(TOK_SLASH);
+    let not_slash = jr_placeholder(code, JR_NZ_N);
+    code.push(LD_A_N);
+    code.push(2);
+    code.push(RET);
+
+    patch_jr(code, not_slash);
+    // Default (including LPAREN) = 0
+    code.push(XOR_A);
+    code.push(RET);
+}
+
+fn emit_repl_apply_op(code: &mut Vec<u8>, val_pop: u16, val_push: u16, alloc_num: u16,
+                      bcd_add: u16, bcd_sub: u16, bcd_mul: u16, bcd_div: u16, bcd_mul10: u16, bcd_copy: u16,
+                      _scale_bcd_to_byte: u16) {
+    use opcodes::*;
+    // Apply operator in A to top two values on stack
+    // Strategy: copy left to result, then apply operation with right
+    // BCD add: (HL) = (DE) + (HL), so result = right + left = left + right
+    // BCD sub: (HL) = (HL) - (DE), so result = left - right
+    // Assignment: copy right to left, push left
+
+    // Check for assignment first (needs different handling)
+    code.push(CP_N);
+    code.push(TOK_ASSIGN);
+    let not_assign = jr_placeholder(code, JR_NZ_N);
+
+    // === ASSIGNMENT HANDLING ===
+    // Pop right operand (the value)
+    code.push(CALL_NN);
+    emit_u16(code, val_pop);
+    code.push(PUSH_HL);  // [stack: right]
+
+    // Pop left operand (the variable address)
+    code.push(CALL_NN);
+    emit_u16(code, val_pop);
+    // HL = left (dest), [stack: right]
+
+    code.push(POP_DE);   // DE = right (source), [stack: empty]
+    code.push(PUSH_HL);  // Save left (result) [stack: left]
+
+    // Copy right to left: HL=dest (left), DE=source (right)
+    code.push(EX_DE_HL); // Now HL=source, DE=dest for bcd_copy (HL=dest, DE=src)
+    code.push(EX_DE_HL); // Swap back - bcd_copy needs HL=dest, DE=src
+    // Actually bcd_copy does: copy from DE to HL
+    // So HL = left (dest), DE = right (source) is correct
+    code.push(CALL_NN);
+    emit_u16(code, bcd_copy);
+
+    // After bcd_copy, HL is corrupted (points past data due to LDIR).
+    // left was saved on stack before the copy.
+    // Check if left == scale (slot 26). If so, sync BCD to REPL_SCALE byte.
+    // REPL_SCALE_BCD = REPL_VARS + 26*28 = 0x8400 + 0x2E8 = 0x86E8
+    code.push(POP_HL);           // HL = left [stack: empty]
+    code.push(PUSH_HL);          // Re-save [stack: left]
+    code.push(LD_DE_NN);
+    emit_u16(code, REPL_VARS + 26 * 28);  // Scale BCD address
+    code.push(LD_A_L);
+    code.push(XOR_E);
+    let not_scale = jr_placeholder(code, JR_NZ_N);
+    code.push(LD_A_H);
+    code.push(XOR_D);
+    let not_scale2 = jr_placeholder(code, JR_NZ_N);
+
+    // It's scale! Extract byte value from last packed byte
+    // HL = scale BCD, [stack: left]
+    code.push(LD_BC_NN);
+    emit_u16(code, 27);          // Point to last byte (offset 27)
+    code.push(ADD_HL_BC);
+    code.push(LD_A_HL);          // A = last packed byte (2 BCD digits, 0-99)
+    // Convert packed BCD to binary: high_digit * 10 + low_digit
+    code.push(LD_B_A);           // Save packed
+    code.push(AND_N);
+    code.push(0x0F);             // A = low digit
+    code.push(LD_C_A);           // C = low digit
+    code.push(LD_A_B);           // A = packed
+    code.push(RRCA);
+    code.push(RRCA);
+    code.push(RRCA);
+    code.push(RRCA);
+    code.push(AND_N);
+    code.push(0x0F);             // A = high digit
+    // A * 10 = A * 8 + A * 2
+    code.push(LD_B_A);           // B = high digit
+    code.push(ADD_A_A);          // A = 2 * high
+    code.push(ADD_A_A);          // A = 4 * high
+    code.push(ADD_A_B);          // A = 5 * high
+    code.push(ADD_A_A);          // A = 10 * high
+    code.push(ADD_A_C);          // A = 10 * high + low
+    code.push(LD_NN_A);
+    emit_u16(code, REPL_SCALE);  // Store to single-byte REPL_SCALE
+
+    patch_jr(code, not_scale);
+    patch_jr(code, not_scale2);
+    // Either path: stack has [left]
+
+    // Push result (left, which now contains right's value)
+    code.push(POP_HL);   // HL = left [stack: empty]
+    code.push(CALL_NN);
+    emit_u16(code, val_push);
+    code.push(RET);
+
+    // === NORMAL OPERATOR HANDLING ===
+    patch_jr(code, not_assign);
+
+    code.push(PUSH_AF);  // Save operator [stack: op]
+
+    // Pop right operand
+    code.push(CALL_NN);
+    emit_u16(code, val_pop);
+    code.push(PUSH_HL);  // [stack: right, op]
+
+    // Pop left operand
+    code.push(CALL_NN);
+    emit_u16(code, val_pop);
+    // HL = left, [stack: right, op]
+
+    // Allocate result
+    code.push(PUSH_HL);  // Save left [stack: left, right, op]
+    code.push(CALL_NN);
+    emit_u16(code, alloc_num);
+    // HL = result ptr, [stack: left, right, op]
+
+    code.push(POP_DE);   // DE = left, [stack: right, op]
+    code.push(PUSH_HL);  // Save result [stack: result, right, op]
+
+    // Copy left to result: HL=dest (result), DE=source (left)
+    code.push(CALL_NN);
+    emit_u16(code, bcd_copy);
+
+    // Set up for BCD operation: HL = result (has left's data), DE = right
+    code.push(POP_HL);   // HL = result, [stack: right, op]
+    code.push(POP_DE);   // DE = right, [stack: op]
+    code.push(POP_AF);   // A = op [stack: empty]
+    code.push(PUSH_HL);  // Save result [stack: result]
+    // Now: HL = result (has left), DE = right, A = operator
+
+    // Dispatch based on operator
+    code.push(CP_N);
+    code.push(TOK_PLUS);
+    let do_add = jr_placeholder(code, JR_Z_N);
+    code.push(CP_N);
+    code.push(TOK_MINUS);
+    let do_sub = jr_placeholder(code, JR_Z_N);
+    code.push(CP_N);
+    code.push(TOK_STAR);
+    let do_mul = jr_placeholder(code, JR_Z_N);
+    code.push(CP_N);
+    code.push(TOK_SLASH);
+    let do_div = jr_placeholder(code, JR_Z_N);
+
+    // Unknown op - result already has left's value
+    let done = jr_placeholder(code, JR_N);
+
+    // Add: result = left + right
+    // bcd_add: (HL) = (DE) + (HL), so result = right + result = right + left
+    patch_jr(code, do_add);
+    code.push(CALL_NN);
+    emit_u16(code, bcd_add);
+    let done2 = jr_placeholder(code, JR_N);
+
+    // Sub: result = left - right
+    // bcd_sub: (HL) = (HL) - (DE), so result = result - right = left - right
+    patch_jr(code, do_sub);
+    code.push(CALL_NN);
+    emit_u16(code, bcd_sub);
+    let done3 = jr_placeholder(code, JR_N);
+
+    // Mul: result = left * right
+    patch_jr(code, do_mul);
+    code.push(CALL_NN);
+    emit_u16(code, bcd_mul);
+    let done4 = jr_placeholder(code, JR_N);
+
+    // Div: result = left / right (with scale-aware precision)
+    patch_jr(code, do_div);
+    // Before dividing, multiply dividend by 10^scale for decimal precision
+    // HL = dividend (result), DE = divisor
+    // Save DE (divisor)
+    code.push(PUSH_DE);
+    // Read REPL_SCALE
+    code.push(LD_A_NN_IND);
+    emit_u16(code, REPL_SCALE);
+    code.push(OR_A);             // Check if scale = 0
+    let skip_mul10 = jr_placeholder(code, JR_Z_N);
+    code.push(LD_B_A);           // B = scale (loop counter)
+    let mul10_loop = code.len() as u16;
+    code.push(PUSH_BC);          // Save counter
+    code.push(CALL_NN);
+    emit_u16(code, bcd_mul10);   // Multiply dividend by 10
+    code.push(POP_BC);
+    code.push(DJNZ_N);
+    let back = (mul10_loop as i16 - code.len() as i16 - 1) as i8;
+    code.push(back as u8);
+    patch_jr(code, skip_mul10);
+    // Restore DE (divisor)
+    code.push(POP_DE);
+    // Now do the integer division
+    code.push(CALL_NN);
+    emit_u16(code, bcd_div);
+    // After division, set result scale byte to REPL_SCALE
+    // HL = result (bcd_div returns result in HL)
+    code.push(PUSH_HL);          // Save result
+    code.push(INC_HL);
+    code.push(INC_HL);           // HL = result + 2 (scale byte)
+    code.push(LD_A_NN_IND);
+    emit_u16(code, REPL_SCALE);
+    code.push(LD_HL_A);          // Store scale in result
+    code.push(POP_HL);           // Restore result pointer
+
+    patch_jr(code, done);
+    patch_jr(code, done2);
+    patch_jr(code, done3);
+    patch_jr(code, done4);
+
+    // Get result pointer and push
+    code.push(POP_HL);   // HL = result [stack: empty]
+    code.push(CALL_NN);
+    emit_u16(code, val_push);
+    code.push(RET);
+}
+
+fn emit_repl_evaluate(code: &mut Vec<u8>, val_push: u16, val_pop: u16, op_push: u16, op_pop: u16, op_empty: u16, op_peek: u16, get_prec: u16, apply_op: u16, byte_to_scale_bcd: u16, alloc_num: u16, bcd_copy: u16) {
+    use opcodes::*;
+    // Shunting-yard expression evaluator
+    // Reads from REPL_TOKEN_BUF
+
+    // Reset stacks
+    code.push(LD_HL_NN);
+    emit_u16(code, REPL_VAL_STACK);
+    code.push(LD_NN_HL);
+    emit_u16(code, REPL_VAL_SP);
+    code.push(LD_HL_NN);
+    emit_u16(code, REPL_OP_STACK);
+    code.push(LD_NN_HL);
+    emit_u16(code, REPL_OP_SP);
+
+    // IX = token pointer
+    code.push(LD_HL_NN);
+    emit_u16(code, REPL_TOKEN_BUF);
+    code.push(PUSH_HL);
+    emit_pop_ix(code);
+
+    let eval_loop = code.len() as u16;
+    // Get token type
+    emit_ld_a_ix_d(code, 0);
+
+    // Check EOF - use JP Z for long jump
+    code.push(OR_A);
+    let flush_ops = jp_z_placeholder(code);
+
+    // Check NUMBER
+    code.push(CP_N);
+    code.push(TOK_NUMBER);
+    let not_num = jr_placeholder(code, JR_NZ_N);
+    // Get BCD pointer from token bytes 1-2
+    emit_ld_l_ix_d(code, 1);
+    emit_ld_h_ix_d(code, 2);
+    code.push(CALL_NN);
+    emit_u16(code, val_push);
+    // Advance token pointer by 4
+    code.push(LD_BC_NN);
+    emit_u16(code, 4);
+    emit_add_ix_bc(code);
+    code.push(JR_N);
+    let back = (eval_loop as i16 - code.len() as i16 - 1) as i8;
+    code.push(back as u8);
+
+    patch_jr(code, not_num);
+    // Check VARIABLE
+    code.push(CP_N);
+    code.push(TOK_VARIABLE);
+    let not_var = jr_placeholder(code, JR_NZ_N);
+    // Get variable index from token byte 1
+    emit_ld_a_ix_d(code, 1);
+    // Calculate variable address: REPL_VARS + index * 28
+    // A = index (0-25)
+    code.push(LD_L_A);
+    code.push(LD_H_N);
+    code.push(0);            // HL = index
+    code.push(ADD_HL_HL);    // HL = 2*index
+    code.push(ADD_HL_HL);    // HL = 4*index
+    code.push(LD_D_H);
+    code.push(LD_E_L);       // DE = 4*index
+    code.push(ADD_HL_HL);    // HL = 8*index
+    code.push(ADD_HL_HL);    // HL = 16*index
+    code.push(ADD_HL_HL);    // HL = 32*index
+    code.push(OR_A);         // Clear carry
+    emit_sbc_hl_de(code);    // HL = 28*index
+    code.push(LD_DE_NN);
+    emit_u16(code, REPL_VARS);
+    code.push(ADD_HL_DE);    // HL = REPL_VARS + 28*index
+    code.push(CALL_NN);
+    emit_u16(code, val_push);
+    // Advance token pointer by 4
+    code.push(LD_BC_NN);
+    emit_u16(code, 4);
+    emit_add_ix_bc(code);
+    // Use JP instead of JR to avoid offset overflow
+    code.push(JP_NN);
+    emit_u16(code, eval_loop);
+
+    patch_jr(code, not_var);
+    // Check SCALE - treat it like variable index 26
+    code.push(CP_N);
+    code.push(TOK_SCALE);
+    let not_scale = jr_placeholder(code, JR_NZ_N);
+    // Use same address calculation as VARIABLE with index 26
+    code.push(LD_A_N);
+    code.push(26);  // Scale is "variable" 26
+    // Calculate variable address: REPL_VARS + index * 28
+    code.push(LD_L_A);
+    code.push(LD_H_N);
+    code.push(0);            // HL = index
+    code.push(ADD_HL_HL);    // HL = 2*index
+    code.push(ADD_HL_HL);    // HL = 4*index
+    code.push(LD_D_H);
+    code.push(LD_E_L);       // DE = 4*index
+    code.push(ADD_HL_HL);    // HL = 8*index
+    code.push(ADD_HL_HL);    // HL = 16*index
+    code.push(ADD_HL_HL);    // HL = 32*index
+    code.push(OR_A);         // Clear carry
+    emit_sbc_hl_de(code);    // HL = 28*index
+    code.push(LD_DE_NN);
+    emit_u16(code, REPL_VARS);
+    code.push(ADD_HL_DE);    // HL = REPL_VARS + 28*index
+    code.push(CALL_NN);
+    emit_u16(code, val_push);
+    // Advance token pointer by 4
+    code.push(LD_BC_NN);
+    emit_u16(code, 4);
+    emit_add_ix_bc(code);
+    code.push(JP_NN);
+    emit_u16(code, eval_loop);
+
+    patch_jr(code, not_scale);
+    // Check LPAREN
+    code.push(CP_N);
+    code.push(TOK_LPAREN);
+    let not_lparen = jr_placeholder(code, JR_NZ_N);
+    code.push(LD_A_N);
+    code.push(TOK_LPAREN);
+    code.push(CALL_NN);
+    emit_u16(code, op_push);
+    code.push(LD_BC_NN);
+    emit_u16(code, 4);
+    emit_add_ix_bc(code);
+    code.push(JR_N);
+    let back2 = (eval_loop as i16 - code.len() as i16 - 1) as i8;
+    code.push(back2 as u8);
+
+    patch_jr(code, not_lparen);
+    // Check RPAREN
+    code.push(CP_N);
+    code.push(TOK_RPAREN);
+    let not_rparen = jr_placeholder(code, JR_NZ_N);
+    // Pop and apply until LPAREN
+    let rparen_loop = code.len() as u16;
+    code.push(CALL_NN);
+    emit_u16(code, op_peek);
+    code.push(CP_N);
+    code.push(TOK_LPAREN);
+    let rparen_done = jr_placeholder(code, JR_Z_N);
+    code.push(CALL_NN);
+    emit_u16(code, op_pop);
+    code.push(CALL_NN);
+    emit_u16(code, apply_op);
+    code.push(JR_N);
+    let back3 = (rparen_loop as i16 - code.len() as i16 - 1) as i8;
+    code.push(back3 as u8);
+    patch_jr(code, rparen_done);
+    code.push(CALL_NN);
+    emit_u16(code, op_pop);  // Discard LPAREN
+    code.push(LD_BC_NN);
+    emit_u16(code, 4);
+    emit_add_ix_bc(code);
+    code.push(JR_N);
+    let back4 = (eval_loop as i16 - code.len() as i16 - 1) as i8;
+    code.push(back4 as u8);
+
+    patch_jr(code, not_rparen);
+    // It's an operator - handle precedence
+    code.push(LD_C_A);  // C = current operator
+    code.push(CALL_NN);
+    emit_u16(code, get_prec);
+    code.push(LD_B_A);  // B = current precedence
+
+    let prec_loop = code.len() as u16;
+    code.push(CALL_NN);
+    emit_u16(code, op_empty);
+    let push_op = jr_placeholder(code, JR_Z_N);
+    code.push(CALL_NN);
+    emit_u16(code, op_peek);
+    code.push(CP_N);
+    code.push(TOK_LPAREN);
+    let push_op2 = jr_placeholder(code, JR_Z_N);
+    code.push(CALL_NN);
+    emit_u16(code, get_prec);
+    code.push(CP_B);
+    let push_op3 = jr_placeholder(code, JR_C_N);  // Stack has lower prec
+    // Pop and apply
+    code.push(CALL_NN);
+    emit_u16(code, op_pop);
+    code.push(CALL_NN);
+    emit_u16(code, apply_op);
+    code.push(JR_N);
+    let back5 = (prec_loop as i16 - code.len() as i16 - 1) as i8;
+    code.push(back5 as u8);
+
+    patch_jr(code, push_op);
+    patch_jr(code, push_op2);
+    patch_jr(code, push_op3);
+    code.push(LD_A_C);
+    code.push(CALL_NN);
+    emit_u16(code, op_push);
+    code.push(LD_BC_NN);
+    emit_u16(code, 4);
+    emit_add_ix_bc(code);
+    // Use JP instead of JR - too far for relative jump
+    code.push(JP_NN);
+    emit_u16(code, eval_loop);
+
+    // Flush remaining operators
+    patch_jp(code, flush_ops);
+    let flush_loop = code.len() as u16;
+    code.push(CALL_NN);
+    emit_u16(code, op_empty);
+    code.push(RET_Z);
+    code.push(CALL_NN);
+    emit_u16(code, op_pop);
+    code.push(CP_N);
+    code.push(TOK_LPAREN);
+    let skip_lparen = jr_placeholder(code, JR_Z_N);
+    code.push(CALL_NN);
+    emit_u16(code, apply_op);
+    patch_jr(code, skip_lparen);
+    code.push(JR_N);
+    let back7 = (flush_loop as i16 - code.len() as i16 - 1) as i8;
+    code.push(back7 as u8);
+}
+
+fn emit_repl_print_num(code: &mut Vec<u8>, acia_out: u16) {
+    use opcodes::*;
+    // Print BCD number at HL
+    // Format: [sign][len][scale][digits...]
+
+    code.push(PUSH_HL);
+
+    // Check sign
+    code.push(LD_A_HL);
+    code.push(AND_N);
+    code.push(0x80);
+    let not_neg = jr_placeholder(code, JR_Z_N);
+    code.push(LD_A_N);
+    code.push(b'-');
+    code.push(CALL_NN);
+    emit_u16(code, acia_out);
+
+    patch_jr(code, not_neg);
+    code.push(POP_HL);
+    code.push(INC_HL);
+    code.push(LD_B_HL);  // B = digit count
+    code.push(INC_HL);
+    code.push(LD_C_HL);  // C = scale (unused for now)
+    code.push(INC_HL);
+
+    // Skip leading zeros
+    code.push(LD_E_N);
+    code.push(0);  // E = printed flag
+
+    let print_loop = code.len() as u16;
+    code.push(LD_A_B);
+    code.push(OR_A);
+    code.push(RET_Z);
+
+    code.push(LD_A_HL);
+    // Skip leading zero if E=0 and B>1
+    code.push(OR_A);
+    let not_zero = jr_placeholder(code, JR_NZ_N);
+    code.push(LD_A_E);
+    code.push(OR_A);
+    let already_printed = jr_placeholder(code, JR_NZ_N);
+    code.push(LD_A_B);
+    code.push(CP_N);
+    code.push(1);
+    let is_last = jr_placeholder(code, JR_Z_N);
+    // Skip this zero
+    code.push(INC_HL);
+    code.push(DEC_B);
+    code.push(JR_N);
+    let back = (print_loop as i16 - code.len() as i16 - 1) as i8;
+    code.push(back as u8);
+
+    patch_jr(code, not_zero);
+    patch_jr(code, already_printed);
+    patch_jr(code, is_last);
+    // Print digit
+    code.push(LD_A_HL);
+    code.push(ADD_A_N);
+    code.push(b'0');
+    code.push(CALL_NN);
+    emit_u16(code, acia_out);
+    code.push(LD_E_N);
+    code.push(1);  // Mark as printed
+    code.push(INC_HL);
+    code.push(DEC_B);
+    code.push(JR_N);
+    let back2 = (print_loop as i16 - code.len() as i16 - 1) as i8;
+    code.push(back2 as u8);
+}
+
+fn emit_repl_init(code: &mut Vec<u8>) {
+    use opcodes::*;
+
+    // Disable interrupts, set stack
+    code.push(DI);
+    code.push(LD_SP_NN);
+    emit_u16(code, STACK_TOP);
+
+    // Initialize heap pointer
+    code.push(LD_HL_NN);
+    emit_u16(code, REPL_HEAP);
+    code.push(LD_NN_HL);
+    emit_u16(code, REPL_HEAP_PTR);
+
+    // Initialize scale = 0
+    code.push(XOR_A);
+    code.push(LD_NN_A);
+    emit_u16(code, REPL_SCALE);
+
+    // NOTE: Scale (slot 26) is NOT pre-initialized like other variables
+
+    // Print banner (address will be patched)
+    code.push(LD_HL_NN);
+    emit_u16(code, 0);  // Placeholder for banner address
+    code.push(CALL_NN);
+    emit_u16(code, 0);  // Placeholder for print_str
+}
+
+fn emit_repl_main_loop(code: &mut Vec<u8>, print_str: u16, print_crlf: u16, getline: u16, tokenize: u16, evaluate: u16, val_pop: u16, print_num: u16, repl_loop: u16) {
+    use opcodes::*;
+
+    // Print prompt
+    code.push(LD_HL_NN);
+    emit_u16(code, 0);  // Placeholder for prompt address
+    code.push(CALL_NN);
+    emit_u16(code, print_str);
+
+    // Get line
+    code.push(CALL_NN);
+    emit_u16(code, getline);
+
+    // Check if empty
+    code.push(LD_A_NN_IND);
+    emit_u16(code, REPL_INPUT_LEN);
+    code.push(OR_A);
+    code.push(JP_Z_NN);
+    emit_u16(code, repl_loop);
+
+    // Tokenize
+    code.push(CALL_NN);
+    emit_u16(code, tokenize);
+
+    // Evaluate
+    code.push(CALL_NN);
+    emit_u16(code, evaluate);
+
+    // Pop result
+    code.push(CALL_NN);
+    emit_u16(code, val_pop);
+
+    // Print result
+    code.push(CALL_NN);
+    emit_u16(code, print_num);
+
+    // Print newline
+    code.push(CALL_NN);
+    emit_u16(code, print_crlf);
+
+    // Loop
+    code.push(JP_NN);
+    emit_u16(code, repl_loop);
+}
+
+fn patch_repl_strings(code: &mut Vec<u8>, init_addr: u16, banner_str: u16, prompt_str: u16, _error_str: u16, print_str: u16, repl_loop: u16) {
+    // Find and patch string addresses in init code
+    // The init code has:
+    //   LD HL, banner_addr
+    //   CALL print_str
+    // and the main loop has:
+    //   LD HL, prompt_addr
+    //   CALL print_str
+
+    // Init code structure:
+    // DI; LD SP,nn; LD HL,heap; LD (heap_ptr),HL; XOR A; LD (scale),A
+    // That's: 1 + 3 + 3 + 3 + 1 + 3 = 14 bytes
+    // Then: LD HL,nn (banner) = 3 bytes, CALL nn (print_str) = 3 bytes
+
+    let banner_patch = init_addr as usize + 14 + 1;  // +1 for LD HL opcode
+    code[banner_patch] = (banner_str & 0xFF) as u8;
+    code[banner_patch + 1] = (banner_str >> 8) as u8;
+
+    let print_str_patch = init_addr as usize + 14 + 3 + 1;  // +1 for CALL opcode
+    code[print_str_patch] = (print_str & 0xFF) as u8;
+    code[print_str_patch + 1] = (print_str >> 8) as u8;
+
+    // Repl loop is at repl_loop
+    // LD HL, prompt (3 bytes)
+    let prompt_patch = repl_loop as usize + 1;
+    code[prompt_patch] = (prompt_str & 0xFF) as u8;
+    code[prompt_patch + 1] = (prompt_str >> 8) as u8;
 }
 
 #[cfg(test)]
