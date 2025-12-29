@@ -9,7 +9,7 @@
 /// Maximum precision: 100 digits (50 bytes of BCD data + 3 header = 53 bytes max)
 /// Numbers are stored with implicit decimal point based on scale.
 
-use crate::bytecode::{BcNum, CompiledModule, Op};
+use crate::bytecode::{CompiledModule, Op};
 
 // Z80 opcodes
 #[allow(dead_code)]
@@ -297,6 +297,7 @@ const VM_SCALE: u16 = VM_STATE_BASE + 4;    // Current scale (1 byte)
 const VM_IBASE: u16 = VM_STATE_BASE + 5;    // Input base (1 byte)
 const VM_OBASE: u16 = VM_STATE_BASE + 6;    // Output base (1 byte)
 const VM_HEAP: u16 = VM_STATE_BASE + 8;     // Heap pointer (2 bytes)
+#[allow(dead_code)]
 const VM_TEMP: u16 = VM_STATE_BASE + 10;    // Temp pointer (2 bytes)
 
 // Pre-allocated constants in RAM (each needs 28 bytes: 3 header + 25 packed)
@@ -308,13 +309,16 @@ const VARS_BASE: u16 = VM_STATE_BASE + 0x48;   // (0x8048-0x807B)
 
 // Value stack (pointers to numbers, 64 entries * 2 bytes = 128 bytes)
 const VSTACK_BASE: u16 = VM_STATE_BASE + 0x7C; // (0x807C-0x80FB)
+#[allow(dead_code)]
 const VSTACK_SIZE: u16 = 128;
 
 // Heap for BCD numbers starts after value stack
 const HEAP_START: u16 = VM_STATE_BASE + 0xFC;  // (0x80FC+)
 
 // Number format constants
+#[allow(dead_code)]
 const NUM_HEADER_SIZE: u8 = 3;        // sign + len + scale
+#[allow(dead_code)]
 const MAX_DIGITS: u8 = 100;           // Max digits per number
 const MAX_NUM_SIZE: u8 = 53;          // 3 + 50 packed bytes
 
@@ -759,6 +763,7 @@ fn jp_z_placeholder(code: &mut Vec<u8>) -> usize {
     pos
 }
 
+#[allow(dead_code)]
 fn jp_placeholder(code: &mut Vec<u8>) -> usize {
     code.push(JP_NN);
     let pos = code.len();
@@ -780,6 +785,7 @@ fn jp_nz_placeholder(code: &mut Vec<u8>) -> usize {
 }
 
 // IX register helper functions
+#[allow(dead_code)]
 fn emit_push_ix(code: &mut Vec<u8>) {
     code.push(IX_PREFIX);
     code.push(PUSH_IX_OP);
@@ -790,6 +796,7 @@ fn emit_pop_ix(code: &mut Vec<u8>) {
     code.push(POP_IX_OP);
 }
 
+#[allow(dead_code)]
 fn emit_ld_ix_nn(code: &mut Vec<u8>, val: u16) {
     code.push(IX_PREFIX);
     code.push(LD_IX_NN_OP);
@@ -801,6 +808,7 @@ fn emit_add_ix_bc(code: &mut Vec<u8>) {
     code.push(ADD_IX_BC_OP);
 }
 
+#[allow(dead_code)]
 fn emit_add_ix_de(code: &mut Vec<u8>) {
     code.push(IX_PREFIX);
     code.push(ADD_IX_DE_OP);
@@ -824,11 +832,13 @@ fn emit_ld_h_ix_d(code: &mut Vec<u8>, d: i8) {
     code.push(d as u8);
 }
 
+#[allow(dead_code)]
 fn emit_inc_ix(code: &mut Vec<u8>) {
     code.push(IX_PREFIX);
     code.push(INC_IX_OP);
 }
 
+#[allow(dead_code)]
 fn emit_dec_ix(code: &mut Vec<u8>) {
     code.push(IX_PREFIX);
     code.push(DEC_IX_OP);
@@ -840,6 +850,7 @@ fn emit_sbc_hl_de(code: &mut Vec<u8>) {
     code.push(SBC_HL_DE_OP);
 }
 
+#[allow(dead_code)]
 fn emit_sbc_hl_bc(code: &mut Vec<u8>) {
     code.push(ED_PREFIX);
     code.push(SBC_HL_BC_OP);
@@ -2922,6 +2933,7 @@ const REPL_INPUT_LEN: u16 = 0x80F0;      // Current input length
 const REPL_INPUT_POS: u16 = 0x80F1;      // Current parse position
 const REPL_TOKEN_BUF: u16 = 0x8100;      // Tokenized input (64 tokens * 4 bytes)
 const REPL_TOKEN_CNT: u16 = 0x81FC;      // Token count
+#[allow(dead_code)]
 const REPL_TOKEN_POS: u16 = 0x81FE;      // Current token position for parsing
 const REPL_OP_STACK: u16 = 0x8200;       // Operator stack (64 entries)
 const REPL_OP_SP: u16 = 0x82FE;          // Operator stack pointer
@@ -2944,7 +2956,9 @@ const TOK_PLUS: u8 = 0x10;
 const TOK_MINUS: u8 = 0x11;
 const TOK_STAR: u8 = 0x12;
 const TOK_SLASH: u8 = 0x13;
+#[allow(dead_code)]
 const TOK_PERCENT: u8 = 0x14;
+#[allow(dead_code)]
 const TOK_CARET: u8 = 0x15;
 const TOK_LPAREN: u8 = 0x20;
 const TOK_RPAREN: u8 = 0x21;
@@ -4284,7 +4298,7 @@ fn emit_repl_apply_op(code: &mut Vec<u8>, val_pop: u16, val_push: u16, alloc_num
     code.push(RET);
 }
 
-fn emit_repl_evaluate(code: &mut Vec<u8>, val_push: u16, val_pop: u16, op_push: u16, op_pop: u16, op_empty: u16, op_peek: u16, get_prec: u16, apply_op: u16, byte_to_scale_bcd: u16, alloc_num: u16, bcd_copy: u16) {
+fn emit_repl_evaluate(code: &mut Vec<u8>, val_push: u16, _val_pop: u16, op_push: u16, op_pop: u16, op_empty: u16, op_peek: u16, get_prec: u16, apply_op: u16, _byte_to_scale_bcd: u16, _alloc_num: u16, _bcd_copy: u16) {
     use opcodes::*;
     // Shunting-yard expression evaluator
     // Reads from REPL_TOKEN_BUF
@@ -4503,6 +4517,7 @@ fn emit_repl_evaluate(code: &mut Vec<u8>, val_push: u16, val_pop: u16, op_push: 
     code.push(back7 as u8);
 }
 
+#[allow(dead_code)]
 fn emit_repl_print_num(code: &mut Vec<u8>, acia_out: u16) {
     use opcodes::*;
     // Print BCD number at HL

@@ -117,6 +117,7 @@ pub enum Stmt {
     Halt,
 
     /// Auto (local variable declaration)
+    #[allow(dead_code)]
     Auto(Vec<AutoVar>),
 
     /// Empty statement
@@ -130,6 +131,7 @@ pub enum PrintItem {
 }
 
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 pub struct AutoVar {
     pub name: String,
     pub is_array: bool,
@@ -146,6 +148,7 @@ pub struct Function {
 #[derive(Debug, Clone)]
 pub struct FuncParam {
     pub name: String,
+    #[allow(dead_code)]
     pub is_array: bool,
 }
 

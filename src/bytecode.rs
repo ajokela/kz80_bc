@@ -155,6 +155,7 @@ pub struct BcNum {
     pub decimal_digits: Vec<u8>,    // BCD digits after decimal
 }
 
+#[allow(dead_code)]
 impl BcNum {
     pub fn zero() -> Self {
         BcNum {
@@ -260,6 +261,7 @@ pub struct CompiledModule {
 }
 
 #[derive(Debug)]
+#[allow(dead_code)]
 pub struct CompiledFunction {
     pub name: String,
     pub param_count: usize,

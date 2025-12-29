@@ -79,6 +79,7 @@ pub enum Token {
 }
 
 impl Token {
+    #[allow(dead_code)]
     pub fn is_assignment_op(&self) -> bool {
         matches!(self,
             Token::Assign | Token::PlusAssign | Token::MinusAssign |
